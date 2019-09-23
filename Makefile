@@ -1,7 +1,7 @@
 # ===== Please update these fields accordingly
 
 studentName = 游騰德
-studentId = 0616026
+studentId = 066666616026
 studentGitHubHandle = samuleyutt
 studentEmail = samuleyuyy@gmail.com
 
