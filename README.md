@@ -1,11 +1,11 @@
 # HW0 環境熟悉
 
-+ Name: <請修改 Makefile>
-+ ID: <請修改 Makefile>
-+ GitHub: <請修改 Makefile>
-+ Email: <請修改 Makefile>
++ Name: 游騰德
++ ID: 0616026
++ GitHub: samuleyutt
++ Email: samuleyuyy@gmail.com
 
-Last Make: <自動生成的欄位喇>
+Last Make: Mon Sep 23 10:39:25 CST 2019
 
 ---
 
@@ -63,7 +63,7 @@ git clone 剛剛得到的 Repo 網址
 - studentName : 你的中文姓名
 - studentId : 你交大的學號
 - studentGitHubHandle: 你的 GitHub 帳號
-- studentEmail: 你在 GitHub 使用的主要電子信箱
+- studentEmail: samuleyuyy@gmail.com
 
 ##### 更新後的 Makefile 內容範例：
 ```Shell
@@ -80,20 +80,20 @@ studentEmail = nctuGreatAgain@gmail.com
 $ make
 cp .README.backup.md README.md
 # Update README.md ...
-sed -i '' 's/Name:.*/Name: 編義氣/'  README.md 
-sed -i '' 's/ID:.*/ID: 0612999/'  README.md 
-sed -i '' 's/GitHub:.*/GitHub: nctuGreatAgain/'  README.md 
-sed -i '' 's/Email:.*/Email: nctuGreatAgain@gmail.com/'  README.md 
-sed -i '' 's/Last Make:.*/Last Make: Wed Aug 21 13:05:25 CST 2019/'  README.md 
+sed -i '' 's/Name: 游騰德
+sed -i '' 's/ID: 0616026
+sed -i '' 's/GitHub: samuleyutt
+sed -i '' 's/Email: samuleyuyy@gmail.com
+sed -i '' 's/Last Make: Mon Sep 23 10:39:25 CST 2019
 cat README.md | head -n 10
 # HW0 環境熟悉
 
-+ Name: 編義氣
-+ ID: 0612999
-+ GitHub: nctuGreatAgain
-+ Email: nctuGreatAgain@gmail.com
++ Name: 游騰德
++ ID: 0616026
++ GitHub: samuleyutt
++ Email: samuleyuyy@gmail.com
 
-Last Make: Wed Aug 21 13:05:25 CST 2019
+Last Make: Mon Sep 23 10:39:25 CST 2019
 
 ---
 ```

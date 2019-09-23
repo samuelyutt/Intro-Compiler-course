@@ -1,9 +1,9 @@
 # ===== Please update these fields accordingly
 
-studentName = 編義氣
-studentId = 0612999
-studentGitHubHandle = nctuGreatAgain
-studentEmail = nctuGreatAgain@gmail.com
+studentName = 游騰德
+studentId = 0616026
+studentGitHubHandle = samuleyutt
+studentEmail = samuleyuyy@gmail.com
 
 
 # ==============================================
