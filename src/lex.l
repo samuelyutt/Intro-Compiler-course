@@ -2,13 +2,21 @@
 #define LIST               strcat(buf, yytext)
 #define token(t)           {LIST; if (Opt_T) printf("<%s>\n", #t);}
 #define tokenChar(t)       {LIST; if (Opt_T) printf("<%c>\n", (t));}
-#define tokenInteger(t, i) {LIST; if (Opt_T) printf("<%s: %d>\n", #t, (i));}
-#define tokenString(t, s)  {LIST; if (Opt_T) printf("<%s: %s>\n", #t, (s));}
+#define tokenInteger(t, i) {LIST; if (Opt_T) printf("<%s: %s>\n", #t, (i));}
+#define tokenString(s)     {LIST; if (Opt_T) printf("<string: "); for (int i=1; s[i]!='"'; i++) printf("%c", (s[i])); printf(">\n");}
 // Define your token macros here
 //  for example :
 //    #define tokenScientific(t, s)   <definition>
 //    #define tokenFloat(ts)          <definition>
 //    #define <any other macros you needed>
+#define tokenKeyword(k)		{LIST; if (Opt_T) printf("<KW%s>\n", (k));}
+//#define tokenOprtDlmt(t)	{LIST; if (Opt_T) printf("<%s>\n", (t));}
+//#define tokenDelimiter(t)	{LIST; if (Opt_T) printf("<%s>\n", (t));}
+#define tokenId(id)			{LIST; if (Opt_T) printf("<id: %s>\n", (id));}
+#define tokenFloat(f) 		{LIST; if (Opt_T) printf("<float: %s>\n", (f));}
+#define tokenScientific(s) 	{LIST; if (Opt_T) printf("<scientific: %s>\n", (s));}
+
+
 
 #define MAX_LINE_LENG      256
 
@@ -18,19 +26,62 @@ int linenum = 1;
 char buf[MAX_LINE_LENG];
 %}
 
+
+space			[ \t]+
+keyword 		array|begin|boolean|def|do|else|end|false|for|integer|if|of|print|read|real|string|then|to|true|return|var|while
+decint			0|([1-9][0-9]*)
+float			(0|([1-9][0-9]*))[.][0-9]*[1-9]
+
 %%
-"("     { tokenChar('('); }
+{space}			LIST;
+{keyword}		{ tokenKeyword(yytext); }
+","     		{ tokenChar(','); }
+";"     		{ tokenChar(';'); }
+":="     		{ token(:=); }
+":"     		{ tokenChar(':'); }
+"("     		{ tokenChar('('); }
+")"     		{ tokenChar(')'); }
+"["     		{ tokenChar('['); }
+"]"     		{ tokenChar(']'); }
+"+"     		{ tokenChar('+'); }
+"-"     		{ tokenChar('-'); }
+"*"     		{ tokenChar('*'); }
+"/"     		{ tokenChar('/'); }
+"mod"     		{ token(mod); }
+"<"     		{ tokenChar('<'); }
+"<="     		{ token(<=); }
+"<>"     		{ token(<>); }
+">="     		{ token(>=); }
+">"     		{ tokenChar('>'); }
+"="     		{ tokenChar('='); }
+"and"     		{ token(and); }
+"or"     		{ token(or); }
+"not"     		{ token(not); }
+
+
+["]([a-zA-z0-9])*["]				{ tokenString(yytext); }
+[a-zA-z]([a-zA-z0-9])* 				{ tokenId(yytext); }
+
+({decint}|{float})[Ee][+-]?{decint}	{ tokenScientific(yytext); }	
+{float}								{ tokenFloat(yytext); }
+{decint}							{ tokenInteger(integer, yytext); }
+0[0-7]+								{ tokenInteger(oct_integer, yytext); }
+
+
+
+
+
 \n      {
           LIST;
           if (Opt_S)
-            printf("%d: %s\n", linenum, buf);
+            printf("%d: %s", linenum, buf);
           linenum++;
           buf[0] = '\0';
         }
 .       {
           /* error */
-          printf("error at line %d: bad character \"%s\"\n", linenum, yytext );
-          exit(-1);
+          //printf("error at line %d: bad character \"%s\"\n", linenum, yytext );
+          //exit(-1);
         }
 %%
 int main( int argc, char **argv )
