@@ -3,7 +3,7 @@
 #define token(t)           {LIST; if (Opt_T) printf("<%s>\n", #t);}
 #define tokenChar(t)       {LIST; if (Opt_T) printf("<%c>\n", (t));}
 #define tokenInteger(t, i) {LIST; if (Opt_T) printf("<%s: %s>\n", #t, (i));}
-#define tokenString(s)     {LIST; if (Opt_T) printf("<string: "); for (int i=1; s[i]!='"'; i++) printf("%c", (s[i])); printf(">\n");}
+#define tokenString(s)     {LIST; if (Opt_T) {printf("<string: "); for (int i=1; s[i]!='"'; i++) printf("%c", (s[i])); printf(">\n");}}
 // Define your token macros here
 //  for example :
 //    #define tokenScientific(t, s)   <definition>
@@ -26,63 +26,73 @@ int linenum = 1;
 char buf[MAX_LINE_LENG];
 %}
 
+%Start COMMENT
 
-space			[ \t]+
-keyword 		array|begin|boolean|def|do|else|end|false|for|integer|if|of|print|read|real|string|then|to|true|return|var|while
-decint			0|([1-9][0-9]*)
-float			(0|([1-9][0-9]*))[.][0-9]*[1-9]
+space		[ \t]+
+keyword 	array|begin|boolean|def|do|else|end|false|for|integer|if|of|print|read|real|string|then|to|true|return|var|while
+decint		0|([1-9][0-9]*)
+float		(0|([1-9][0-9]*))[.][0-9]*[1-9]
 
 %%
-{space}			LIST;
-{keyword}		{ tokenKeyword(yytext); }
-","     		{ tokenChar(','); }
-";"     		{ tokenChar(';'); }
-":="     		{ token(:=); }
-":"     		{ tokenChar(':'); }
-"("     		{ tokenChar('('); }
-")"     		{ tokenChar(')'); }
-"["     		{ tokenChar('['); }
-"]"     		{ tokenChar(']'); }
-"+"     		{ tokenChar('+'); }
-"-"     		{ tokenChar('-'); }
-"*"     		{ tokenChar('*'); }
-"/"     		{ tokenChar('/'); }
-"mod"     		{ token(mod); }
-"<"     		{ tokenChar('<'); }
-"<="     		{ token(<=); }
-"<>"     		{ token(<>); }
-">="     		{ token(>=); }
-">"     		{ tokenChar('>'); }
-"="     		{ tokenChar('='); }
-"and"     		{ token(and); }
-"or"     		{ token(or); }
-"not"     		{ token(not); }
 
+<COMMENT>{space}		LIST;
+<COMMENT>"*/"			{ LIST; BEGIN INITIAL; }
+<COMMENT>"\n" 			{
+    						LIST;
+    						if (Opt_S)
+    						printf("%d: %s", linenum, buf);
+    						linenum++;
+    						buf[0] = '\0'; }
+<COMMENT>.       		LIST;
 
-["]([a-zA-z0-9])*["]				{ tokenString(yytext); }
-[a-zA-z]([a-zA-z0-9])* 				{ tokenId(yytext); }
+<INITIAL>{space}		LIST;
+<INITIAL>"/*"			{ LIST; BEGIN COMMENT; }
+<INITIAL>"//&S+".*$		{ LIST; Opt_S = 1; }
+<INITIAL>"//&S-".*$		{ LIST; Opt_S = 0; }
+<INITIAL>"//&T+".*$		{ LIST; Opt_T = 1; }
+<INITIAL>"//&T-".*$		{ LIST; Opt_T = 0; }
+<INITIAL>"//".*$		LIST;
+<INITIAL>{keyword}		{ tokenKeyword(yytext); }
+<INITIAL>","     		{ tokenChar(','); }
+<INITIAL>";"     		{ tokenChar(';'); }
+<INITIAL>":="     		{ token(:=); }
+<INITIAL>":"     		{ tokenChar(':'); }
+<INITIAL>"("     		{ tokenChar('('); }
+<INITIAL>")"     		{ tokenChar(')'); }
+<INITIAL>"["     		{ tokenChar('['); }
+<INITIAL>"]"     		{ tokenChar(']'); }
+<INITIAL>"+"     		{ tokenChar('+'); }
+<INITIAL>"-"     		{ tokenChar('-'); }
+<INITIAL>"*"     		{ tokenChar('*'); }
+<INITIAL>"/"     		{ tokenChar('/'); }
+<INITIAL>"mod"     		{ token(mod); }
+<INITIAL>"<"     		{ tokenChar('<'); }
+<INITIAL>"<="     		{ token(<=); }
+<INITIAL>"<>"     		{ token(<>); }
+<INITIAL>">="     		{ token(>=); }
+<INITIAL>">"     		{ tokenChar('>'); }
+<INITIAL>"="     		{ tokenChar('='); }
+<INITIAL>"and"     		{ token(and); }
+<INITIAL>"or"     		{ token(or); }
+<INITIAL>"not"     		{ token(not); }
 
-({decint}|{float})[Ee][+-]?{decint}	{ tokenScientific(yytext); }	
-{float}								{ tokenFloat(yytext); }
-{decint}							{ tokenInteger(integer, yytext); }
-0[0-7]+								{ tokenInteger(oct_integer, yytext); }
+<INITIAL>["].*["]								{ tokenString(yytext); }
+<INITIAL>[a-zA-Z]([a-zA-Z0-9])* 				{ tokenId(yytext); }
+<INITIAL>({decint}|{float})[Ee][+-]?{decint}	{ tokenScientific(yytext); }	
+<INITIAL>{float}								{ tokenFloat(yytext); }
+<INITIAL>{decint}								{ tokenInteger(integer, yytext); }
+<INITIAL>0[0-7]+								{ tokenInteger(oct_integer, yytext); }
 
-
-
-
-
-\n      {
-          LIST;
-          if (Opt_S)
-            printf("%d: %s", linenum, buf);
-          linenum++;
-          buf[0] = '\0';
-        }
-.       {
-          /* error */
-          //printf("error at line %d: bad character \"%s\"\n", linenum, yytext );
-          //exit(-1);
-        }
+<INITIAL>"\n" 			{
+    						LIST;
+    						if (Opt_S)
+    						printf("%d: %s", linenum, buf);
+    						linenum++;
+    						buf[0] = '\0'; }
+<INITIAL>.       		{
+    						/* error */
+    						printf("Error at line %d: bad character \"%s\"\n", linenum, yytext );
+    						exit(-1); }
 %%
 int main( int argc, char **argv )
 {
