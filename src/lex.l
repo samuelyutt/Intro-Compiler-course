@@ -35,7 +35,6 @@ float		(0|([1-9][0-9]*))[.][0-9]*[1-9]
 
 %%
 
-<COMMENT>{space}		LIST;
 <COMMENT>"*/"			{ LIST; BEGIN INITIAL; }
 <COMMENT>"\n" 			{
     						LIST;
