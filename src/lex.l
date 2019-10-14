@@ -10,8 +10,6 @@
 //    #define tokenFloat(ts)          <definition>
 //    #define <any other macros you needed>
 #define tokenKeyword(k)		{LIST; if (Opt_T) printf("<KW%s>\n", (k));}
-//#define tokenOprtDlmt(t)	{LIST; if (Opt_T) printf("<%s>\n", (t));}
-//#define tokenDelimiter(t)	{LIST; if (Opt_T) printf("<%s>\n", (t));}
 #define tokenId(id)			{LIST; if (Opt_T) printf("<id: %s>\n", (id));}
 #define tokenFloat(f) 		{LIST; if (Opt_T) printf("<float: %s>\n", (f));}
 #define tokenScientific(s) 	{LIST; if (Opt_T) printf("<scientific: %s>\n", (s));}
