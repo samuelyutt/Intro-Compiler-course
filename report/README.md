@@ -1,10 +1,9 @@
 Introduction to Compiler Design
 Project Assignment 1 Report - Lexical Definition
 ===
-:::info
 學生：游騰德
 學號：0616026
-:::
+
 This assignment is to write a scanner for the `P` language in `lex`.
 
 What can my scanner do?
@@ -14,9 +13,8 @@ Token Defining
 Tokens are divided into two classes: tokens that will be passed to the parser and tokens that will be discarded by the scanner
 
 ### Tokens that will be passed to the parser
-:::success
 My scanner defines the following tokens and passes them to the parser
-:::
+
 - Delimiter: `,`, `;`, `:`, `(`, `)`, `[`, `]`
 - Operators: `+`, `-`, `*`, `/`, `mod`, `:=`, `<`, `<=`, `<>`, `>=`, `>`, `=`, `and`, `or`, `not`
 - Keywords: `array`, `begin`, `boolean`, `def`, `do`, `else`, `end`, `false`, `for`, `integer`, `if`, `of`, `print`, `read`, `real`, `string`, `then`, `to`, `true`, `return`, `var`, `while`
@@ -33,9 +31,8 @@ My scanner defines the following tokens and passes them to the parser
 :::
 
 ### Tokens that will be discarded by the scanner
-:::success
 My scanner defines the following tokens but will not pass them to the parser
-:::
+
 - A sequence of blanks (spaces) tabs: `[ \t]+`
 - Newlines: `\n`
 - Comments
@@ -46,19 +43,17 @@ My scanner defines the following tokens but will not pass them to the parser
     - `"//&S-".*$`: Turn `Opt_S` off
     - `"//&T+".*$`: Turn `Opt_T` on
     - `"//&T-".*$`: Turn `Opt_T` off
-:::info
+
 `S`: program listing
 `T`: token listing
-:::
-:::warning
+
 The effect of options starts from current line of code. By default, both options are on.
-:::
+
 
 Token Listing
 --
-:::success
+
 Macro definitions use specific token as input and return an integer value, a character, a string, etc.
-:::
 
 ### Default C macro definitions
 - `token(t)` is used for all other tokens.
