@@ -21,75 +21,64 @@ static void yyerror(const char *msg);
 %token "\n"
 
 %%
-//program     : ID ';';
+program         : ID ';' dec_vars_consts_ functions_ compound_stmt END ID;
 
-program         : ID ';' vars_consts_ functions_ compound_statment END ID;
+dec_vars_consts_: dec_var_const dec_vars_consts_ |;
+dec_var_const   : dec_var
+                | dec_varconst;
 
-vars_consts_    : var_const vars_consts_
-                |;
-var_const       : variable
-                | varconstant;
-
-variable        : VAR idlist ':' scalar_type ';'
+dec_var         : VAR idlist ':' scalar_type ';'
                 | VAR idlist ':' arr_type ';';
 
 type            : scalar_type | arr_type;
 scalar_type     : INTEGER | REAL | STRING | BOOLEAN;
 arr_type        : ARRAY INT TO INT OF type;
 
-varconstant         : VAR idlist ':' literal_constant ';';
-literal_constant    : constant | STR | TRUE | FALSE;
+dec_varconst    : VAR idlist ':' literal_const ';';
+literal_const   : const | STR | TRUE | FALSE;
 
-functions_      : function functions_
-                |;
-function        : ID '(' formal_args_ ')' ':' scalar_type ';' compound_statment END ID
-                | ID '(' formal_args_ ')' ';' compound_statment END ID;
+functions_      : function functions_ |;
+function        : ID '(' formal_args_ ')' ':' scalar_type ';' compound_stmt END ID
+                | ID '(' formal_args_ ')' ';' compound_stmt END ID;
 
-constant        : pos_constant | neg_constant;
-pos_constant    : INT | OCTINT | FLOAT | SCI;
-neg_constant    : neg pos_constant;
+const           : pos_const | neg_const;
+pos_const       : INT | OCTINT | FLOAT | SCI;
+neg_const       : neg pos_const;
 
-formal_args_    : formal_arg formal_args_
-                |;
+formal_args_    : formal_arg formal_args_ |;
 formal_arg      : idlist ':' type;
 
 idlist          : ID ids_;
 ids_            : ',' ID ids_
                 |;
 
-compound_statment   : BGN vars_consts_ statements_ END;
-statements_         : statement statements_
-                    |;
-statement           : PRINT expr ';'
-                    | READ var_ref ';'
-                    | compound_statment
-                    | condition
-                    | whileloop
-                    | forloop
-                    | expr ';'
-                    | rtrn ';';
+compound_stmt   : BGN dec_vars_consts_ stmts_ END;
+stmts_          : stmt stmts_
+                |;
+stmt            : PRINT expr ';'
+                | READ var_ref ';'
+                | compound_stmt
+                | condition
+                | whileloop
+                | forloop
+                | var_ref ASSIGN expr ';'
+                | procedure ';'
+                | rtrn ';';
 
 var_ref         : ID arr_ref;
 
 arr_ref         : exprbs_;
 
-exprbs_         : '[' expr ']' exprbs_
-                |;
+exprbs_         : '[' expr ']' exprbs_ |;
 
-exprcs_         : expr exprcs
-                |;
-exprcs          : ',' expr exprcs
-                |;
+exprcs_         : expr exprcs |;
+exprcs          : ',' expr exprcs |;
 
-
-//exprs_          : expr exprs_
-//                |;
-expr            : items
-                | var_ref ASSIGN items;
-items           : '(' items ')'
-                | items operator items
+expr            : '(' expr ')'
+                | expr operator expr
                 | item;
-item            : var_ref | procedure | literal_constant;
+
+item            : var_ref | procedure | literal_const;
 
 operator        : add | sub | mul | div | rel | log;
 neg             : '-';
@@ -100,12 +89,12 @@ div             : '/' | MOD;
 rel             : '<' | LE | NE | GE | '>' | '=';
 log             : AND | OR | NOT;
 
-condition       : IF expr THEN statements_ ELSE statements_ END IF
-                | IF expr THEN statements_ END IF;
+condition       : IF expr THEN stmts_ ELSE stmts_ END IF
+                | IF expr THEN stmts_ END IF;
 
-whileloop       : WHILE expr DO statements_ END DO;
+whileloop       : WHILE expr DO stmts_ END DO;
 
-forloop         : FOR ID ASSIGN int_const TO int_const DO statements_ END DO;
+forloop         : FOR ID ASSIGN int_const TO int_const DO stmts_ END DO;
 int_const       : pos_int | neg_int;
 pos_int         : INT | OCTINT;
 neg_int         : neg pos_int;
