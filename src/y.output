@@ -8,135 +8,134 @@
    4  dec_var_const : dec_var
    5                | dec_varconst
 
-   6  dec_var : VAR idlist ':' scalar_type ';'
-   7          | VAR idlist ':' arr_type ';'
+   6  dec_var : VAR idlist ':' type ';'
 
-   8  type : scalar_type
-   9       | arr_type
+   7  type : scalar_type
+   8       | arr_type
 
-  10  scalar_type : INTEGER
-  11              | REAL
-  12              | STRING
-  13              | BOOLEAN
+   9  scalar_type : INTEGER
+  10              | REAL
+  11              | STRING
+  12              | BOOLEAN
 
-  14  arr_type : ARRAY INT TO INT OF type
+  13  arr_type : ARRAY INT TO INT OF type
 
-  15  dec_varconst : VAR idlist ':' literal_const ';'
+  14  dec_varconst : VAR idlist ':' literal_const ';'
 
-  16  literal_const : const
-  17                | STR
-  18                | TRUE
-  19                | FALSE
+  15  literal_const : const
+  16                | STR
+  17                | TRUE
+  18                | FALSE
 
-  20  functions_ : function functions_
-  21             |
+  19  functions_ : function functions_
+  20             |
 
-  22  function : ID '(' formal_args_ ')' ':' scalar_type ';' compound_stmt END ID
-  23           | ID '(' formal_args_ ')' ';' compound_stmt END ID
+  21  function : ID '(' formal_args_ ')' ':' scalar_type ';' compound_stmt END ID
+  22           | ID '(' formal_args_ ')' ';' compound_stmt END ID
 
-  24  const : pos_const
-  25        | neg_const
+  23  const : pos_const
+  24        | neg_const
 
-  26  pos_const : INT
-  27            | OCTINT
-  28            | FLOAT
-  29            | SCI
+  25  pos_const : INT
+  26            | OCTINT
+  27            | FLOAT
+  28            | SCI
 
-  30  neg_const : neg pos_const
+  29  neg_const : neg pos_const
 
-  31  formal_args_ : formal_arg formal_args_
-  32               |
+  30  formal_args_ : formal_arg formal_args_
+  31               |
 
-  33  formal_arg : idlist ':' type
+  32  formal_arg : idlist ':' type
 
-  34  idlist : ID ids_
+  33  idlist : ID ids_
 
-  35  ids_ : ',' ID ids_
-  36       |
+  34  ids_ : ',' ID ids_
+  35       |
 
-  37  compound_stmt : BGN dec_vars_consts_ stmts_ END
+  36  compound_stmt : BGN dec_vars_consts_ stmts_ END
 
-  38  stmts_ : stmt stmts_
-  39         |
+  37  stmts_ : stmt stmts_
+  38         |
 
-  40  stmt : PRINT expr ';'
-  41       | READ var_ref ';'
-  42       | compound_stmt
-  43       | condition
-  44       | whileloop
-  45       | forloop
-  46       | var_ref ASSIGN expr ';'
-  47       | procedure ';'
-  48       | rtrn ';'
+  39  stmt : PRINT expr ';'
+  40       | READ var_ref ';'
+  41       | compound_stmt
+  42       | condition
+  43       | whileloop
+  44       | forloop
+  45       | var_ref ASSIGN expr ';'
+  46       | procedure ';'
+  47       | rtrn ';'
 
-  49  var_ref : ID arr_ref
+  48  var_ref : ID arr_ref
 
-  50  arr_ref : exprbs_
+  49  arr_ref : exprbs_
 
-  51  exprbs_ : '[' expr ']' exprbs_
-  52          |
+  50  exprbs_ : '[' expr ']' exprbs_
+  51          |
 
-  53  exprcs_ : expr exprcs
-  54          |
+  52  exprcs_ : expr exprcs
+  53          |
 
-  55  exprcs : ',' expr exprcs
-  56         |
+  54  exprcs : ',' expr exprcs
+  55         |
 
-  57  expr : '(' expr ')'
-  58       | expr operator expr
-  59       | item
+  56  expr : '(' expr ')'
+  57       | expr operator expr
+  58       | item
 
-  60  item : var_ref
-  61       | procedure
-  62       | literal_const
+  59  item : var_ref
+  60       | procedure
+  61       | literal_const
 
-  63  operator : add
-  64           | sub
-  65           | mul
-  66           | div
-  67           | rel
-  68           | log
+  62  operator : add
+  63           | sub
+  64           | mul
+  65           | div
+  66           | rel
+  67           | log
 
-  69  neg : '-'
+  68  neg : '-'
 
-  70  add : '+'
+  69  add : '+'
 
-  71  sub : '-'
+  70  sub : '-'
 
-  72  mul : '*'
+  71  mul : '*'
 
-  73  div : '/'
-  74      | MOD
+  72  div : '/'
+  73      | MOD
 
-  75  rel : '<'
-  76      | LE
-  77      | NE
-  78      | GE
-  79      | '>'
-  80      | '='
+  74  rel : '<'
+  75      | LE
+  76      | NE
+  77      | GE
+  78      | '>'
+  79      | '='
 
-  81  log : AND
-  82      | OR
-  83      | NOT
+  80  log : AND
+  81      | OR
+  82      | NOT
 
-  84  condition : IF expr THEN stmts_ ELSE stmts_ END IF
-  85            | IF expr THEN stmts_ END IF
+  83  condition : IF expr THEN stmts_ ELSE stmts_ END IF
+  84            | IF expr THEN stmts_ END IF
 
-  86  whileloop : WHILE expr DO stmts_ END DO
+  85  whileloop : WHILE expr DO stmts_ END DO
 
-  87  forloop : FOR ID ASSIGN int_const TO int_const DO stmts_ END DO
+  86  forloop : FOR ID ASSIGN int_const TO int_const DO stmts_ END DO
 
-  88  int_const : pos_int
-  89            | neg_int
+  87  int_const : pos_int
+  88            | neg_int
 
-  90  pos_int : INT
-  91          | OCTINT
+  89  pos_int : INT
+  90          | OCTINT
 
-  92  neg_int : neg pos_int
+  91  neg_int : neg pos_int
 
-  93  rtrn : RETURN expr
+  92  rtrn : RETURN expr
 
-  94  procedure : ID '(' exprcs_ ')'
+  93  procedure : ID '(' exprcs_ ')'
 
 state 0
 	$accept : . program $end  (0)
@@ -175,9 +174,8 @@ state 3
 
 
 state 4
-	dec_var : VAR . idlist ':' scalar_type ';'  (6)
-	dec_var : VAR . idlist ':' arr_type ';'  (7)
-	dec_varconst : VAR . idlist ':' literal_const ';'  (15)
+	dec_var : VAR . idlist ':' type ';'  (6)
+	dec_varconst : VAR . idlist ':' literal_const ';'  (14)
 
 	ID  shift 9
 	.  error
@@ -187,10 +185,10 @@ state 4
 
 state 5
 	program : ID ';' dec_vars_consts_ . functions_ compound_stmt END ID  (1)
-	functions_ : .  (21)
+	functions_ : .  (20)
 
 	ID  shift 11
-	BGN  reduce 21
+	BGN  reduce 20
 
 	functions_  goto 12
 	function  goto 13
@@ -230,27 +228,26 @@ state 8
 
 
 state 9
-	idlist : ID . ids_  (34)
-	ids_ : .  (36)
+	idlist : ID . ids_  (33)
+	ids_ : .  (35)
 
 	','  shift 15
-	':'  reduce 36
+	':'  reduce 35
 
 	ids_  goto 16
 
 
 state 10
-	dec_var : VAR idlist . ':' scalar_type ';'  (6)
-	dec_var : VAR idlist . ':' arr_type ';'  (7)
-	dec_varconst : VAR idlist . ':' literal_const ';'  (15)
+	dec_var : VAR idlist . ':' type ';'  (6)
+	dec_varconst : VAR idlist . ':' literal_const ';'  (14)
 
 	':'  shift 17
 	.  error
 
 
 state 11
-	function : ID . '(' formal_args_ ')' ':' scalar_type ';' compound_stmt END ID  (22)
-	function : ID . '(' formal_args_ ')' ';' compound_stmt END ID  (23)
+	function : ID . '(' formal_args_ ')' ':' scalar_type ';' compound_stmt END ID  (21)
+	function : ID . '(' formal_args_ ')' ';' compound_stmt END ID  (22)
 
 	'('  shift 18
 	.  error
@@ -266,11 +263,11 @@ state 12
 
 
 state 13
-	functions_ : function . functions_  (20)
-	functions_ : .  (21)
+	functions_ : function . functions_  (19)
+	functions_ : .  (20)
 
 	ID  shift 11
-	BGN  reduce 21
+	BGN  reduce 20
 
 	functions_  goto 21
 	function  goto 13
@@ -283,22 +280,21 @@ state 14
 
 
 state 15
-	ids_ : ',' . ID ids_  (35)
+	ids_ : ',' . ID ids_  (34)
 
 	ID  shift 22
 	.  error
 
 
 state 16
-	idlist : ID ids_ .  (34)
+	idlist : ID ids_ .  (33)
 
-	.  reduce 34
+	.  reduce 33
 
 
 state 17
-	dec_var : VAR idlist ':' . scalar_type ';'  (6)
-	dec_var : VAR idlist ':' . arr_type ';'  (7)
-	dec_varconst : VAR idlist ':' . literal_const ';'  (15)
+	dec_var : VAR idlist ':' . type ';'  (6)
+	dec_varconst : VAR idlist ':' . literal_const ';'  (14)
 
 	INT  shift 23
 	OCTINT  shift 24
@@ -315,30 +311,31 @@ state 17
 	TRUE  shift 35
 	.  error
 
-	scalar_type  goto 36
-	arr_type  goto 37
-	literal_const  goto 38
-	const  goto 39
-	pos_const  goto 40
-	neg_const  goto 41
-	neg  goto 42
+	type  goto 36
+	scalar_type  goto 37
+	arr_type  goto 38
+	literal_const  goto 39
+	const  goto 40
+	pos_const  goto 41
+	neg_const  goto 42
+	neg  goto 43
 
 
 state 18
-	function : ID '(' . formal_args_ ')' ':' scalar_type ';' compound_stmt END ID  (22)
-	function : ID '(' . formal_args_ ')' ';' compound_stmt END ID  (23)
-	formal_args_ : .  (32)
+	function : ID '(' . formal_args_ ')' ':' scalar_type ';' compound_stmt END ID  (21)
+	function : ID '(' . formal_args_ ')' ';' compound_stmt END ID  (22)
+	formal_args_ : .  (31)
 
 	ID  shift 9
-	')'  reduce 32
+	')'  reduce 31
 
-	idlist  goto 43
-	formal_args_  goto 44
-	formal_arg  goto 45
+	idlist  goto 44
+	formal_args_  goto 45
+	formal_arg  goto 46
 
 
 state 19
-	compound_stmt : BGN . dec_vars_consts_ stmts_ END  (37)
+	compound_stmt : BGN . dec_vars_consts_ stmts_ END  (36)
 	dec_vars_consts_ : .  (3)
 
 	VAR  shift 4
@@ -352,7 +349,7 @@ state 19
 	RETURN  reduce 3
 	WHILE  reduce 3
 
-	dec_vars_consts_  goto 46
+	dec_vars_consts_  goto 47
 	dec_var_const  goto 6
 	dec_var  goto 7
 	dec_varconst  goto 8
@@ -361,146 +358,151 @@ state 19
 state 20
 	program : ID ';' dec_vars_consts_ functions_ compound_stmt . END ID  (1)
 
-	END  shift 47
+	END  shift 48
 	.  error
 
 
 state 21
-	functions_ : function functions_ .  (20)
-
-	.  reduce 20
-
-
-state 22
-	ids_ : ',' ID . ids_  (35)
-	ids_ : .  (36)
-
-	','  shift 15
-	':'  reduce 36
-
-	ids_  goto 48
-
-
-state 23
-	pos_const : INT .  (26)
-
-	.  reduce 26
-
-
-state 24
-	pos_const : OCTINT .  (27)
-
-	.  reduce 27
-
-
-state 25
-	pos_const : FLOAT .  (28)
-
-	.  reduce 28
-
-
-state 26
-	pos_const : SCI .  (29)
-
-	.  reduce 29
-
-
-state 27
-	literal_const : STR .  (17)
-
-	.  reduce 17
-
-
-state 28
-	neg : '-' .  (69)
-
-	.  reduce 69
-
-
-state 29
-	arr_type : ARRAY . INT TO INT OF type  (14)
-
-	INT  shift 49
-	.  error
-
-
-state 30
-	scalar_type : BOOLEAN .  (13)
-
-	.  reduce 13
-
-
-state 31
-	literal_const : FALSE .  (19)
+	functions_ : function functions_ .  (19)
 
 	.  reduce 19
 
 
-state 32
-	scalar_type : INTEGER .  (10)
+state 22
+	ids_ : ',' ID . ids_  (34)
+	ids_ : .  (35)
 
-	.  reduce 10
+	','  shift 15
+	':'  reduce 35
 
-
-state 33
-	scalar_type : REAL .  (11)
-
-	.  reduce 11
+	ids_  goto 49
 
 
-state 34
-	scalar_type : STRING .  (12)
+state 23
+	pos_const : INT .  (25)
+
+	.  reduce 25
+
+
+state 24
+	pos_const : OCTINT .  (26)
+
+	.  reduce 26
+
+
+state 25
+	pos_const : FLOAT .  (27)
+
+	.  reduce 27
+
+
+state 26
+	pos_const : SCI .  (28)
+
+	.  reduce 28
+
+
+state 27
+	literal_const : STR .  (16)
+
+	.  reduce 16
+
+
+state 28
+	neg : '-' .  (68)
+
+	.  reduce 68
+
+
+state 29
+	arr_type : ARRAY . INT TO INT OF type  (13)
+
+	INT  shift 50
+	.  error
+
+
+state 30
+	scalar_type : BOOLEAN .  (12)
 
 	.  reduce 12
 
 
-state 35
-	literal_const : TRUE .  (18)
+state 31
+	literal_const : FALSE .  (18)
 
 	.  reduce 18
 
 
+state 32
+	scalar_type : INTEGER .  (9)
+
+	.  reduce 9
+
+
+state 33
+	scalar_type : REAL .  (10)
+
+	.  reduce 10
+
+
+state 34
+	scalar_type : STRING .  (11)
+
+	.  reduce 11
+
+
+state 35
+	literal_const : TRUE .  (17)
+
+	.  reduce 17
+
+
 state 36
-	dec_var : VAR idlist ':' scalar_type . ';'  (6)
-
-	';'  shift 50
-	.  error
-
-
-state 37
-	dec_var : VAR idlist ':' arr_type . ';'  (7)
+	dec_var : VAR idlist ':' type . ';'  (6)
 
 	';'  shift 51
 	.  error
 
 
+state 37
+	type : scalar_type .  (7)
+
+	.  reduce 7
+
+
 state 38
-	dec_varconst : VAR idlist ':' literal_const . ';'  (15)
+	type : arr_type .  (8)
+
+	.  reduce 8
+
+
+state 39
+	dec_varconst : VAR idlist ':' literal_const . ';'  (14)
 
 	';'  shift 52
 	.  error
 
 
-state 39
-	literal_const : const .  (16)
-
-	.  reduce 16
-
-
 state 40
-	const : pos_const .  (24)
+	literal_const : const .  (15)
+
+	.  reduce 15
+
+
+state 41
+	const : pos_const .  (23)
+
+	.  reduce 23
+
+
+state 42
+	const : neg_const .  (24)
 
 	.  reduce 24
 
 
-state 41
-	const : neg_const .  (25)
-
-	.  reduce 25
-
-
-state 42
-	neg_const : neg . pos_const  (30)
+state 43
+	neg_const : neg . pos_const  (29)
 
 	INT  shift 23
 	OCTINT  shift 24
@@ -511,36 +513,36 @@ state 42
 	pos_const  goto 53
 
 
-state 43
-	formal_arg : idlist . ':' type  (33)
+state 44
+	formal_arg : idlist . ':' type  (32)
 
 	':'  shift 54
 	.  error
 
 
-state 44
-	function : ID '(' formal_args_ . ')' ':' scalar_type ';' compound_stmt END ID  (22)
-	function : ID '(' formal_args_ . ')' ';' compound_stmt END ID  (23)
+state 45
+	function : ID '(' formal_args_ . ')' ':' scalar_type ';' compound_stmt END ID  (21)
+	function : ID '(' formal_args_ . ')' ';' compound_stmt END ID  (22)
 
 	')'  shift 55
 	.  error
 
 
-state 45
-	formal_args_ : formal_arg . formal_args_  (31)
-	formal_args_ : .  (32)
+state 46
+	formal_args_ : formal_arg . formal_args_  (30)
+	formal_args_ : .  (31)
 
 	ID  shift 9
-	')'  reduce 32
+	')'  reduce 31
 
-	idlist  goto 43
+	idlist  goto 44
 	formal_args_  goto 56
-	formal_arg  goto 45
+	formal_arg  goto 46
 
 
-state 46
-	compound_stmt : BGN dec_vars_consts_ . stmts_ END  (37)
-	stmts_ : .  (39)
+state 47
+	compound_stmt : BGN dec_vars_consts_ . stmts_ END  (36)
+	stmts_ : .  (38)
 
 	ID  shift 57
 	BGN  shift 19
@@ -550,7 +552,7 @@ state 46
 	READ  shift 61
 	RETURN  shift 62
 	WHILE  shift 63
-	END  reduce 39
+	END  reduce 38
 
 	compound_stmt  goto 64
 	stmts_  goto 65
@@ -563,52 +565,46 @@ state 46
 	rtrn  goto 72
 
 
-state 47
+state 48
 	program : ID ';' dec_vars_consts_ functions_ compound_stmt END . ID  (1)
 
 	ID  shift 73
 	.  error
 
 
-state 48
-	ids_ : ',' ID ids_ .  (35)
-
-	.  reduce 35
-
-
 state 49
-	arr_type : ARRAY INT . TO INT OF type  (14)
+	ids_ : ',' ID ids_ .  (34)
+
+	.  reduce 34
+
+
+state 50
+	arr_type : ARRAY INT . TO INT OF type  (13)
 
 	TO  shift 74
 	.  error
 
 
-state 50
-	dec_var : VAR idlist ':' scalar_type ';' .  (6)
+state 51
+	dec_var : VAR idlist ':' type ';' .  (6)
 
 	.  reduce 6
 
 
-state 51
-	dec_var : VAR idlist ':' arr_type ';' .  (7)
-
-	.  reduce 7
-
-
 state 52
-	dec_varconst : VAR idlist ':' literal_const ';' .  (15)
+	dec_varconst : VAR idlist ':' literal_const ';' .  (14)
 
-	.  reduce 15
+	.  reduce 14
 
 
 state 53
-	neg_const : neg pos_const .  (30)
+	neg_const : neg pos_const .  (29)
 
-	.  reduce 30
+	.  reduce 29
 
 
 state 54
-	formal_arg : idlist ':' . type  (33)
+	formal_arg : idlist ':' . type  (32)
 
 	ARRAY  shift 29
 	BOOLEAN  shift 30
@@ -617,69 +613,69 @@ state 54
 	STRING  shift 34
 	.  error
 
-	scalar_type  goto 75
-	arr_type  goto 76
-	type  goto 77
+	type  goto 75
+	scalar_type  goto 37
+	arr_type  goto 38
 
 
 state 55
-	function : ID '(' formal_args_ ')' . ':' scalar_type ';' compound_stmt END ID  (22)
-	function : ID '(' formal_args_ ')' . ';' compound_stmt END ID  (23)
+	function : ID '(' formal_args_ ')' . ':' scalar_type ';' compound_stmt END ID  (21)
+	function : ID '(' formal_args_ ')' . ';' compound_stmt END ID  (22)
 
-	';'  shift 78
-	':'  shift 79
+	';'  shift 76
+	':'  shift 77
 	.  error
 
 
 state 56
-	formal_args_ : formal_arg formal_args_ .  (31)
+	formal_args_ : formal_arg formal_args_ .  (30)
 
-	.  reduce 31
+	.  reduce 30
 
 
 state 57
-	var_ref : ID . arr_ref  (49)
-	procedure : ID . '(' exprcs_ ')'  (94)
-	exprbs_ : .  (52)
+	var_ref : ID . arr_ref  (48)
+	procedure : ID . '(' exprcs_ ')'  (93)
+	exprbs_ : .  (51)
 
-	'('  shift 80
-	'['  shift 81
-	','  reduce 52
-	';'  reduce 52
-	')'  reduce 52
-	']'  reduce 52
-	'+'  reduce 52
-	'-'  reduce 52
-	'*'  reduce 52
-	'/'  reduce 52
-	MOD  reduce 52
-	ASSIGN  reduce 52
-	'<'  reduce 52
-	LE  reduce 52
-	NE  reduce 52
-	GE  reduce 52
-	'>'  reduce 52
-	'='  reduce 52
-	AND  reduce 52
-	OR  reduce 52
-	NOT  reduce 52
-	DO  reduce 52
-	THEN  reduce 52
+	'('  shift 78
+	'['  shift 79
+	','  reduce 51
+	';'  reduce 51
+	')'  reduce 51
+	']'  reduce 51
+	'+'  reduce 51
+	'-'  reduce 51
+	'*'  reduce 51
+	'/'  reduce 51
+	MOD  reduce 51
+	ASSIGN  reduce 51
+	'<'  reduce 51
+	LE  reduce 51
+	NE  reduce 51
+	GE  reduce 51
+	'>'  reduce 51
+	'='  reduce 51
+	AND  reduce 51
+	OR  reduce 51
+	NOT  reduce 51
+	DO  reduce 51
+	THEN  reduce 51
 
-	arr_ref  goto 82
-	exprbs_  goto 83
+	arr_ref  goto 80
+	exprbs_  goto 81
 
 
 state 58
-	forloop : FOR . ID ASSIGN int_const TO int_const DO stmts_ END DO  (87)
+	forloop : FOR . ID ASSIGN int_const TO int_const DO stmts_ END DO  (86)
 
-	ID  shift 84
+	ID  shift 82
 	.  error
 
 
 state 59
-	condition : IF . expr THEN stmts_ ELSE stmts_ END IF  (84)
-	condition : IF . expr THEN stmts_ END IF  (85)
+	condition : IF . expr THEN stmts_ ELSE stmts_ END IF  (83)
+	condition : IF . expr THEN stmts_ END IF  (84)
 
 	ID  shift 57
 	INT  shift 23
@@ -687,25 +683,25 @@ state 59
 	FLOAT  shift 25
 	SCI  shift 26
 	STR  shift 27
-	'('  shift 85
+	'('  shift 83
 	'-'  shift 28
 	FALSE  shift 31
 	TRUE  shift 35
 	.  error
 
-	literal_const  goto 86
-	const  goto 39
-	pos_const  goto 40
-	neg_const  goto 41
-	neg  goto 42
-	expr  goto 87
-	var_ref  goto 88
-	procedure  goto 89
-	item  goto 90
+	literal_const  goto 84
+	const  goto 40
+	pos_const  goto 41
+	neg_const  goto 42
+	neg  goto 43
+	expr  goto 85
+	var_ref  goto 86
+	procedure  goto 87
+	item  goto 88
 
 
 state 60
-	stmt : PRINT . expr ';'  (40)
+	stmt : PRINT . expr ';'  (39)
 
 	ID  shift 57
 	INT  shift 23
@@ -713,34 +709,34 @@ state 60
 	FLOAT  shift 25
 	SCI  shift 26
 	STR  shift 27
-	'('  shift 85
+	'('  shift 83
 	'-'  shift 28
 	FALSE  shift 31
 	TRUE  shift 35
 	.  error
 
-	literal_const  goto 86
-	const  goto 39
-	pos_const  goto 40
-	neg_const  goto 41
-	neg  goto 42
-	expr  goto 91
-	var_ref  goto 88
-	procedure  goto 89
-	item  goto 90
+	literal_const  goto 84
+	const  goto 40
+	pos_const  goto 41
+	neg_const  goto 42
+	neg  goto 43
+	expr  goto 89
+	var_ref  goto 86
+	procedure  goto 87
+	item  goto 88
 
 
 state 61
-	stmt : READ . var_ref ';'  (41)
+	stmt : READ . var_ref ';'  (40)
 
-	ID  shift 92
+	ID  shift 90
 	.  error
 
-	var_ref  goto 93
+	var_ref  goto 91
 
 
 state 62
-	rtrn : RETURN . expr  (93)
+	rtrn : RETURN . expr  (92)
 
 	ID  shift 57
 	INT  shift 23
@@ -748,25 +744,25 @@ state 62
 	FLOAT  shift 25
 	SCI  shift 26
 	STR  shift 27
-	'('  shift 85
+	'('  shift 83
 	'-'  shift 28
 	FALSE  shift 31
 	TRUE  shift 35
 	.  error
 
-	literal_const  goto 86
-	const  goto 39
-	pos_const  goto 40
-	neg_const  goto 41
-	neg  goto 42
-	expr  goto 94
-	var_ref  goto 88
-	procedure  goto 89
-	item  goto 90
+	literal_const  goto 84
+	const  goto 40
+	pos_const  goto 41
+	neg_const  goto 42
+	neg  goto 43
+	expr  goto 92
+	var_ref  goto 86
+	procedure  goto 87
+	item  goto 88
 
 
 state 63
-	whileloop : WHILE . expr DO stmts_ END DO  (86)
+	whileloop : WHILE . expr DO stmts_ END DO  (85)
 
 	ID  shift 57
 	INT  shift 23
@@ -774,39 +770,39 @@ state 63
 	FLOAT  shift 25
 	SCI  shift 26
 	STR  shift 27
-	'('  shift 85
+	'('  shift 83
 	'-'  shift 28
 	FALSE  shift 31
 	TRUE  shift 35
 	.  error
 
-	literal_const  goto 86
-	const  goto 39
-	pos_const  goto 40
-	neg_const  goto 41
-	neg  goto 42
-	expr  goto 95
-	var_ref  goto 88
-	procedure  goto 89
-	item  goto 90
+	literal_const  goto 84
+	const  goto 40
+	pos_const  goto 41
+	neg_const  goto 42
+	neg  goto 43
+	expr  goto 93
+	var_ref  goto 86
+	procedure  goto 87
+	item  goto 88
 
 
 state 64
-	stmt : compound_stmt .  (42)
+	stmt : compound_stmt .  (41)
 
-	.  reduce 42
+	.  reduce 41
 
 
 state 65
-	compound_stmt : BGN dec_vars_consts_ stmts_ . END  (37)
+	compound_stmt : BGN dec_vars_consts_ stmts_ . END  (36)
 
-	END  shift 96
+	END  shift 94
 	.  error
 
 
 state 66
-	stmts_ : stmt . stmts_  (38)
-	stmts_ : .  (39)
+	stmts_ : stmt . stmts_  (37)
+	stmts_ : .  (38)
 
 	ID  shift 57
 	BGN  shift 19
@@ -816,11 +812,11 @@ state 66
 	READ  shift 61
 	RETURN  shift 62
 	WHILE  shift 63
-	ELSE  reduce 39
-	END  reduce 39
+	ELSE  reduce 38
+	END  reduce 38
 
 	compound_stmt  goto 64
-	stmts_  goto 97
+	stmts_  goto 95
 	stmt  goto 66
 	var_ref  goto 67
 	condition  goto 68
@@ -831,41 +827,41 @@ state 66
 
 
 state 67
-	stmt : var_ref . ASSIGN expr ';'  (46)
+	stmt : var_ref . ASSIGN expr ';'  (45)
 
-	ASSIGN  shift 98
+	ASSIGN  shift 96
 	.  error
 
 
 state 68
-	stmt : condition .  (43)
+	stmt : condition .  (42)
+
+	.  reduce 42
+
+
+state 69
+	stmt : whileloop .  (43)
 
 	.  reduce 43
 
 
-state 69
-	stmt : whileloop .  (44)
+state 70
+	stmt : forloop .  (44)
 
 	.  reduce 44
 
 
-state 70
-	stmt : forloop .  (45)
-
-	.  reduce 45
-
-
 state 71
-	stmt : procedure . ';'  (47)
+	stmt : procedure . ';'  (46)
 
-	';'  shift 99
+	';'  shift 97
 	.  error
 
 
 state 72
-	stmt : rtrn . ';'  (48)
+	stmt : rtrn . ';'  (47)
 
-	';'  shift 100
+	';'  shift 98
 	.  error
 
 
@@ -876,41 +872,29 @@ state 73
 
 
 state 74
-	arr_type : ARRAY INT TO . INT OF type  (14)
+	arr_type : ARRAY INT TO . INT OF type  (13)
 
-	INT  shift 101
+	INT  shift 99
 	.  error
 
 
 state 75
-	type : scalar_type .  (8)
+	formal_arg : idlist ':' type .  (32)
 
-	.  reduce 8
+	.  reduce 32
 
 
 state 76
-	type : arr_type .  (9)
-
-	.  reduce 9
-
-
-state 77
-	formal_arg : idlist ':' type .  (33)
-
-	.  reduce 33
-
-
-state 78
-	function : ID '(' formal_args_ ')' ';' . compound_stmt END ID  (23)
+	function : ID '(' formal_args_ ')' ';' . compound_stmt END ID  (22)
 
 	BGN  shift 19
 	.  error
 
-	compound_stmt  goto 102
+	compound_stmt  goto 100
 
 
-state 79
-	function : ID '(' formal_args_ ')' ':' . scalar_type ';' compound_stmt END ID  (22)
+state 77
+	function : ID '(' formal_args_ ')' ':' . scalar_type ';' compound_stmt END ID  (21)
 
 	BOOLEAN  shift 30
 	INTEGER  shift 32
@@ -918,542 +902,542 @@ state 79
 	STRING  shift 34
 	.  error
 
-	scalar_type  goto 103
+	scalar_type  goto 101
+
+
+state 78
+	procedure : ID '(' . exprcs_ ')'  (93)
+	exprcs_ : .  (53)
+
+	ID  shift 57
+	INT  shift 23
+	OCTINT  shift 24
+	FLOAT  shift 25
+	SCI  shift 26
+	STR  shift 27
+	'('  shift 83
+	'-'  shift 28
+	FALSE  shift 31
+	TRUE  shift 35
+	')'  reduce 53
+
+	literal_const  goto 84
+	const  goto 40
+	pos_const  goto 41
+	neg_const  goto 42
+	neg  goto 43
+	expr  goto 102
+	var_ref  goto 86
+	procedure  goto 87
+	exprcs_  goto 103
+	item  goto 88
+
+
+state 79
+	exprbs_ : '[' . expr ']' exprbs_  (50)
+
+	ID  shift 57
+	INT  shift 23
+	OCTINT  shift 24
+	FLOAT  shift 25
+	SCI  shift 26
+	STR  shift 27
+	'('  shift 83
+	'-'  shift 28
+	FALSE  shift 31
+	TRUE  shift 35
+	.  error
+
+	literal_const  goto 84
+	const  goto 40
+	pos_const  goto 41
+	neg_const  goto 42
+	neg  goto 43
+	expr  goto 104
+	var_ref  goto 86
+	procedure  goto 87
+	item  goto 88
 
 
 state 80
-	procedure : ID '(' . exprcs_ ')'  (94)
-	exprcs_ : .  (54)
-
-	ID  shift 57
-	INT  shift 23
-	OCTINT  shift 24
-	FLOAT  shift 25
-	SCI  shift 26
-	STR  shift 27
-	'('  shift 85
-	'-'  shift 28
-	FALSE  shift 31
-	TRUE  shift 35
-	')'  reduce 54
-
-	literal_const  goto 86
-	const  goto 39
-	pos_const  goto 40
-	neg_const  goto 41
-	neg  goto 42
-	expr  goto 104
-	var_ref  goto 88
-	procedure  goto 89
-	exprcs_  goto 105
-	item  goto 90
-
-
-state 81
-	exprbs_ : '[' . expr ']' exprbs_  (51)
-
-	ID  shift 57
-	INT  shift 23
-	OCTINT  shift 24
-	FLOAT  shift 25
-	SCI  shift 26
-	STR  shift 27
-	'('  shift 85
-	'-'  shift 28
-	FALSE  shift 31
-	TRUE  shift 35
-	.  error
-
-	literal_const  goto 86
-	const  goto 39
-	pos_const  goto 40
-	neg_const  goto 41
-	neg  goto 42
-	expr  goto 106
-	var_ref  goto 88
-	procedure  goto 89
-	item  goto 90
-
-
-state 82
-	var_ref : ID arr_ref .  (49)
-
-	.  reduce 49
-
-
-state 83
-	arr_ref : exprbs_ .  (50)
-
-	.  reduce 50
-
-
-state 84
-	forloop : FOR ID . ASSIGN int_const TO int_const DO stmts_ END DO  (87)
-
-	ASSIGN  shift 107
-	.  error
-
-
-state 85
-	expr : '(' . expr ')'  (57)
-
-	ID  shift 57
-	INT  shift 23
-	OCTINT  shift 24
-	FLOAT  shift 25
-	SCI  shift 26
-	STR  shift 27
-	'('  shift 85
-	'-'  shift 28
-	FALSE  shift 31
-	TRUE  shift 35
-	.  error
-
-	literal_const  goto 86
-	const  goto 39
-	pos_const  goto 40
-	neg_const  goto 41
-	neg  goto 42
-	expr  goto 108
-	var_ref  goto 88
-	procedure  goto 89
-	item  goto 90
-
-
-state 86
-	item : literal_const .  (62)
-
-	.  reduce 62
-
-
-state 87
-	expr : expr . operator expr  (58)
-	condition : IF expr . THEN stmts_ ELSE stmts_ END IF  (84)
-	condition : IF expr . THEN stmts_ END IF  (85)
-
-	'+'  shift 109
-	'-'  shift 110
-	'*'  shift 111
-	'/'  shift 112
-	MOD  shift 113
-	'<'  shift 114
-	LE  shift 115
-	NE  shift 116
-	GE  shift 117
-	'>'  shift 118
-	'='  shift 119
-	AND  shift 120
-	OR  shift 121
-	NOT  shift 122
-	THEN  shift 123
-	.  error
-
-	operator  goto 124
-	add  goto 125
-	sub  goto 126
-	mul  goto 127
-	div  goto 128
-	rel  goto 129
-	log  goto 130
-
-
-state 88
-	item : var_ref .  (60)
-
-	.  reduce 60
-
-
-state 89
-	item : procedure .  (61)
-
-	.  reduce 61
-
-
-state 90
-	expr : item .  (59)
-
-	.  reduce 59
-
-
-state 91
-	stmt : PRINT expr . ';'  (40)
-	expr : expr . operator expr  (58)
-
-	';'  shift 131
-	'+'  shift 109
-	'-'  shift 110
-	'*'  shift 111
-	'/'  shift 112
-	MOD  shift 113
-	'<'  shift 114
-	LE  shift 115
-	NE  shift 116
-	GE  shift 117
-	'>'  shift 118
-	'='  shift 119
-	AND  shift 120
-	OR  shift 121
-	NOT  shift 122
-	.  error
-
-	operator  goto 124
-	add  goto 125
-	sub  goto 126
-	mul  goto 127
-	div  goto 128
-	rel  goto 129
-	log  goto 130
-
-
-state 92
-	var_ref : ID . arr_ref  (49)
-	exprbs_ : .  (52)
-
-	'['  shift 81
-	';'  reduce 52
-
-	arr_ref  goto 82
-	exprbs_  goto 83
-
-
-state 93
-	stmt : READ var_ref . ';'  (41)
-
-	';'  shift 132
-	.  error
-
-
-state 94
-	expr : expr . operator expr  (58)
-	rtrn : RETURN expr .  (93)
-
-	'+'  shift 109
-	'-'  shift 110
-	'*'  shift 111
-	'/'  shift 112
-	MOD  shift 113
-	'<'  shift 114
-	LE  shift 115
-	NE  shift 116
-	GE  shift 117
-	'>'  shift 118
-	'='  shift 119
-	AND  shift 120
-	OR  shift 121
-	NOT  shift 122
-	';'  reduce 93
-
-	operator  goto 124
-	add  goto 125
-	sub  goto 126
-	mul  goto 127
-	div  goto 128
-	rel  goto 129
-	log  goto 130
-
-
-state 95
-	expr : expr . operator expr  (58)
-	whileloop : WHILE expr . DO stmts_ END DO  (86)
-
-	'+'  shift 109
-	'-'  shift 110
-	'*'  shift 111
-	'/'  shift 112
-	MOD  shift 113
-	'<'  shift 114
-	LE  shift 115
-	NE  shift 116
-	GE  shift 117
-	'>'  shift 118
-	'='  shift 119
-	AND  shift 120
-	OR  shift 121
-	NOT  shift 122
-	DO  shift 133
-	.  error
-
-	operator  goto 124
-	add  goto 125
-	sub  goto 126
-	mul  goto 127
-	div  goto 128
-	rel  goto 129
-	log  goto 130
-
-
-state 96
-	compound_stmt : BGN dec_vars_consts_ stmts_ END .  (37)
-
-	.  reduce 37
-
-
-state 97
-	stmts_ : stmt stmts_ .  (38)
-
-	.  reduce 38
-
-
-state 98
-	stmt : var_ref ASSIGN . expr ';'  (46)
-
-	ID  shift 57
-	INT  shift 23
-	OCTINT  shift 24
-	FLOAT  shift 25
-	SCI  shift 26
-	STR  shift 27
-	'('  shift 85
-	'-'  shift 28
-	FALSE  shift 31
-	TRUE  shift 35
-	.  error
-
-	literal_const  goto 86
-	const  goto 39
-	pos_const  goto 40
-	neg_const  goto 41
-	neg  goto 42
-	expr  goto 134
-	var_ref  goto 88
-	procedure  goto 89
-	item  goto 90
-
-
-state 99
-	stmt : procedure ';' .  (47)
-
-	.  reduce 47
-
-
-state 100
-	stmt : rtrn ';' .  (48)
+	var_ref : ID arr_ref .  (48)
 
 	.  reduce 48
 
 
-state 101
-	arr_type : ARRAY INT TO INT . OF type  (14)
+state 81
+	arr_ref : exprbs_ .  (49)
 
-	OF  shift 135
+	.  reduce 49
+
+
+state 82
+	forloop : FOR ID . ASSIGN int_const TO int_const DO stmts_ END DO  (86)
+
+	ASSIGN  shift 105
+	.  error
+
+
+state 83
+	expr : '(' . expr ')'  (56)
+
+	ID  shift 57
+	INT  shift 23
+	OCTINT  shift 24
+	FLOAT  shift 25
+	SCI  shift 26
+	STR  shift 27
+	'('  shift 83
+	'-'  shift 28
+	FALSE  shift 31
+	TRUE  shift 35
+	.  error
+
+	literal_const  goto 84
+	const  goto 40
+	pos_const  goto 41
+	neg_const  goto 42
+	neg  goto 43
+	expr  goto 106
+	var_ref  goto 86
+	procedure  goto 87
+	item  goto 88
+
+
+state 84
+	item : literal_const .  (61)
+
+	.  reduce 61
+
+
+state 85
+	expr : expr . operator expr  (57)
+	condition : IF expr . THEN stmts_ ELSE stmts_ END IF  (83)
+	condition : IF expr . THEN stmts_ END IF  (84)
+
+	'+'  shift 107
+	'-'  shift 108
+	'*'  shift 109
+	'/'  shift 110
+	MOD  shift 111
+	'<'  shift 112
+	LE  shift 113
+	NE  shift 114
+	GE  shift 115
+	'>'  shift 116
+	'='  shift 117
+	AND  shift 118
+	OR  shift 119
+	NOT  shift 120
+	THEN  shift 121
+	.  error
+
+	operator  goto 122
+	add  goto 123
+	sub  goto 124
+	mul  goto 125
+	div  goto 126
+	rel  goto 127
+	log  goto 128
+
+
+state 86
+	item : var_ref .  (59)
+
+	.  reduce 59
+
+
+state 87
+	item : procedure .  (60)
+
+	.  reduce 60
+
+
+state 88
+	expr : item .  (58)
+
+	.  reduce 58
+
+
+state 89
+	stmt : PRINT expr . ';'  (39)
+	expr : expr . operator expr  (57)
+
+	';'  shift 129
+	'+'  shift 107
+	'-'  shift 108
+	'*'  shift 109
+	'/'  shift 110
+	MOD  shift 111
+	'<'  shift 112
+	LE  shift 113
+	NE  shift 114
+	GE  shift 115
+	'>'  shift 116
+	'='  shift 117
+	AND  shift 118
+	OR  shift 119
+	NOT  shift 120
+	.  error
+
+	operator  goto 122
+	add  goto 123
+	sub  goto 124
+	mul  goto 125
+	div  goto 126
+	rel  goto 127
+	log  goto 128
+
+
+state 90
+	var_ref : ID . arr_ref  (48)
+	exprbs_ : .  (51)
+
+	'['  shift 79
+	';'  reduce 51
+
+	arr_ref  goto 80
+	exprbs_  goto 81
+
+
+state 91
+	stmt : READ var_ref . ';'  (40)
+
+	';'  shift 130
+	.  error
+
+
+state 92
+	expr : expr . operator expr  (57)
+	rtrn : RETURN expr .  (92)
+
+	'+'  shift 107
+	'-'  shift 108
+	'*'  shift 109
+	'/'  shift 110
+	MOD  shift 111
+	'<'  shift 112
+	LE  shift 113
+	NE  shift 114
+	GE  shift 115
+	'>'  shift 116
+	'='  shift 117
+	AND  shift 118
+	OR  shift 119
+	NOT  shift 120
+	';'  reduce 92
+
+	operator  goto 122
+	add  goto 123
+	sub  goto 124
+	mul  goto 125
+	div  goto 126
+	rel  goto 127
+	log  goto 128
+
+
+state 93
+	expr : expr . operator expr  (57)
+	whileloop : WHILE expr . DO stmts_ END DO  (85)
+
+	'+'  shift 107
+	'-'  shift 108
+	'*'  shift 109
+	'/'  shift 110
+	MOD  shift 111
+	'<'  shift 112
+	LE  shift 113
+	NE  shift 114
+	GE  shift 115
+	'>'  shift 116
+	'='  shift 117
+	AND  shift 118
+	OR  shift 119
+	NOT  shift 120
+	DO  shift 131
+	.  error
+
+	operator  goto 122
+	add  goto 123
+	sub  goto 124
+	mul  goto 125
+	div  goto 126
+	rel  goto 127
+	log  goto 128
+
+
+state 94
+	compound_stmt : BGN dec_vars_consts_ stmts_ END .  (36)
+
+	.  reduce 36
+
+
+state 95
+	stmts_ : stmt stmts_ .  (37)
+
+	.  reduce 37
+
+
+state 96
+	stmt : var_ref ASSIGN . expr ';'  (45)
+
+	ID  shift 57
+	INT  shift 23
+	OCTINT  shift 24
+	FLOAT  shift 25
+	SCI  shift 26
+	STR  shift 27
+	'('  shift 83
+	'-'  shift 28
+	FALSE  shift 31
+	TRUE  shift 35
+	.  error
+
+	literal_const  goto 84
+	const  goto 40
+	pos_const  goto 41
+	neg_const  goto 42
+	neg  goto 43
+	expr  goto 132
+	var_ref  goto 86
+	procedure  goto 87
+	item  goto 88
+
+
+state 97
+	stmt : procedure ';' .  (46)
+
+	.  reduce 46
+
+
+state 98
+	stmt : rtrn ';' .  (47)
+
+	.  reduce 47
+
+
+state 99
+	arr_type : ARRAY INT TO INT . OF type  (13)
+
+	OF  shift 133
+	.  error
+
+
+state 100
+	function : ID '(' formal_args_ ')' ';' compound_stmt . END ID  (22)
+
+	END  shift 134
+	.  error
+
+
+state 101
+	function : ID '(' formal_args_ ')' ':' scalar_type . ';' compound_stmt END ID  (21)
+
+	';'  shift 135
 	.  error
 
 
 state 102
-	function : ID '(' formal_args_ ')' ';' compound_stmt . END ID  (23)
+	exprcs_ : expr . exprcs  (52)
+	expr : expr . operator expr  (57)
+	exprcs : .  (55)
 
-	END  shift 136
-	.  error
+	','  shift 136
+	'+'  shift 107
+	'-'  shift 108
+	'*'  shift 109
+	'/'  shift 110
+	MOD  shift 111
+	'<'  shift 112
+	LE  shift 113
+	NE  shift 114
+	GE  shift 115
+	'>'  shift 116
+	'='  shift 117
+	AND  shift 118
+	OR  shift 119
+	NOT  shift 120
+	')'  reduce 55
+
+	exprcs  goto 137
+	operator  goto 122
+	add  goto 123
+	sub  goto 124
+	mul  goto 125
+	div  goto 126
+	rel  goto 127
+	log  goto 128
 
 
 state 103
-	function : ID '(' formal_args_ ')' ':' scalar_type . ';' compound_stmt END ID  (22)
+	procedure : ID '(' exprcs_ . ')'  (93)
 
-	';'  shift 137
+	')'  shift 138
 	.  error
 
 
 state 104
-	exprcs_ : expr . exprcs  (53)
-	expr : expr . operator expr  (58)
-	exprcs : .  (56)
+	exprbs_ : '[' expr . ']' exprbs_  (50)
+	expr : expr . operator expr  (57)
 
-	','  shift 138
-	'+'  shift 109
-	'-'  shift 110
-	'*'  shift 111
-	'/'  shift 112
-	MOD  shift 113
-	'<'  shift 114
-	LE  shift 115
-	NE  shift 116
-	GE  shift 117
-	'>'  shift 118
-	'='  shift 119
-	AND  shift 120
-	OR  shift 121
-	NOT  shift 122
-	')'  reduce 56
+	']'  shift 139
+	'+'  shift 107
+	'-'  shift 108
+	'*'  shift 109
+	'/'  shift 110
+	MOD  shift 111
+	'<'  shift 112
+	LE  shift 113
+	NE  shift 114
+	GE  shift 115
+	'>'  shift 116
+	'='  shift 117
+	AND  shift 118
+	OR  shift 119
+	NOT  shift 120
+	.  error
 
-	exprcs  goto 139
-	operator  goto 124
-	add  goto 125
-	sub  goto 126
-	mul  goto 127
-	div  goto 128
-	rel  goto 129
-	log  goto 130
+	operator  goto 122
+	add  goto 123
+	sub  goto 124
+	mul  goto 125
+	div  goto 126
+	rel  goto 127
+	log  goto 128
 
 
 state 105
-	procedure : ID '(' exprcs_ . ')'  (94)
+	forloop : FOR ID ASSIGN . int_const TO int_const DO stmts_ END DO  (86)
 
-	')'  shift 140
-	.  error
-
-
-state 106
-	exprbs_ : '[' expr . ']' exprbs_  (51)
-	expr : expr . operator expr  (58)
-
-	']'  shift 141
-	'+'  shift 109
-	'-'  shift 110
-	'*'  shift 111
-	'/'  shift 112
-	MOD  shift 113
-	'<'  shift 114
-	LE  shift 115
-	NE  shift 116
-	GE  shift 117
-	'>'  shift 118
-	'='  shift 119
-	AND  shift 120
-	OR  shift 121
-	NOT  shift 122
-	.  error
-
-	operator  goto 124
-	add  goto 125
-	sub  goto 126
-	mul  goto 127
-	div  goto 128
-	rel  goto 129
-	log  goto 130
-
-
-state 107
-	forloop : FOR ID ASSIGN . int_const TO int_const DO stmts_ END DO  (87)
-
-	INT  shift 142
-	OCTINT  shift 143
+	INT  shift 140
+	OCTINT  shift 141
 	'-'  shift 28
 	.  error
 
-	neg  goto 144
-	int_const  goto 145
-	pos_int  goto 146
-	neg_int  goto 147
+	neg  goto 142
+	int_const  goto 143
+	pos_int  goto 144
+	neg_int  goto 145
+
+
+state 106
+	expr : '(' expr . ')'  (56)
+	expr : expr . operator expr  (57)
+
+	')'  shift 146
+	'+'  shift 107
+	'-'  shift 108
+	'*'  shift 109
+	'/'  shift 110
+	MOD  shift 111
+	'<'  shift 112
+	LE  shift 113
+	NE  shift 114
+	GE  shift 115
+	'>'  shift 116
+	'='  shift 117
+	AND  shift 118
+	OR  shift 119
+	NOT  shift 120
+	.  error
+
+	operator  goto 122
+	add  goto 123
+	sub  goto 124
+	mul  goto 125
+	div  goto 126
+	rel  goto 127
+	log  goto 128
+
+
+state 107
+	add : '+' .  (69)
+
+	.  reduce 69
 
 
 state 108
-	expr : '(' expr . ')'  (57)
-	expr : expr . operator expr  (58)
-
-	')'  shift 148
-	'+'  shift 109
-	'-'  shift 110
-	'*'  shift 111
-	'/'  shift 112
-	MOD  shift 113
-	'<'  shift 114
-	LE  shift 115
-	NE  shift 116
-	GE  shift 117
-	'>'  shift 118
-	'='  shift 119
-	AND  shift 120
-	OR  shift 121
-	NOT  shift 122
-	.  error
-
-	operator  goto 124
-	add  goto 125
-	sub  goto 126
-	mul  goto 127
-	div  goto 128
-	rel  goto 129
-	log  goto 130
-
-
-state 109
-	add : '+' .  (70)
+	sub : '-' .  (70)
 
 	.  reduce 70
 
 
-state 110
-	sub : '-' .  (71)
+state 109
+	mul : '*' .  (71)
 
 	.  reduce 71
 
 
-state 111
-	mul : '*' .  (72)
+state 110
+	div : '/' .  (72)
 
 	.  reduce 72
 
 
-state 112
-	div : '/' .  (73)
+state 111
+	div : MOD .  (73)
 
 	.  reduce 73
 
 
-state 113
-	div : MOD .  (74)
+state 112
+	rel : '<' .  (74)
 
 	.  reduce 74
 
 
-state 114
-	rel : '<' .  (75)
+state 113
+	rel : LE .  (75)
 
 	.  reduce 75
 
 
-state 115
-	rel : LE .  (76)
+state 114
+	rel : NE .  (76)
 
 	.  reduce 76
 
 
-state 116
-	rel : NE .  (77)
+state 115
+	rel : GE .  (77)
 
 	.  reduce 77
 
 
-state 117
-	rel : GE .  (78)
+state 116
+	rel : '>' .  (78)
 
 	.  reduce 78
 
 
-state 118
-	rel : '>' .  (79)
+state 117
+	rel : '=' .  (79)
 
 	.  reduce 79
 
 
-state 119
-	rel : '=' .  (80)
+state 118
+	log : AND .  (80)
 
 	.  reduce 80
 
 
-state 120
-	log : AND .  (81)
+state 119
+	log : OR .  (81)
 
 	.  reduce 81
 
 
-state 121
-	log : OR .  (82)
+state 120
+	log : NOT .  (82)
 
 	.  reduce 82
 
 
-state 122
-	log : NOT .  (83)
-
-	.  reduce 83
-
-
-state 123
-	condition : IF expr THEN . stmts_ ELSE stmts_ END IF  (84)
-	condition : IF expr THEN . stmts_ END IF  (85)
-	stmts_ : .  (39)
+state 121
+	condition : IF expr THEN . stmts_ ELSE stmts_ END IF  (83)
+	condition : IF expr THEN . stmts_ END IF  (84)
+	stmts_ : .  (38)
 
 	ID  shift 57
 	BGN  shift 19
@@ -1463,8 +1447,107 @@ state 123
 	READ  shift 61
 	RETURN  shift 62
 	WHILE  shift 63
-	ELSE  reduce 39
-	END  reduce 39
+	ELSE  reduce 38
+	END  reduce 38
+
+	compound_stmt  goto 64
+	stmts_  goto 147
+	stmt  goto 66
+	var_ref  goto 67
+	condition  goto 68
+	whileloop  goto 69
+	forloop  goto 70
+	procedure  goto 71
+	rtrn  goto 72
+
+
+state 122
+	expr : expr operator . expr  (57)
+
+	ID  shift 57
+	INT  shift 23
+	OCTINT  shift 24
+	FLOAT  shift 25
+	SCI  shift 26
+	STR  shift 27
+	'('  shift 83
+	'-'  shift 28
+	FALSE  shift 31
+	TRUE  shift 35
+	.  error
+
+	literal_const  goto 84
+	const  goto 40
+	pos_const  goto 41
+	neg_const  goto 42
+	neg  goto 43
+	expr  goto 148
+	var_ref  goto 86
+	procedure  goto 87
+	item  goto 88
+
+
+state 123
+	operator : add .  (62)
+
+	.  reduce 62
+
+
+state 124
+	operator : sub .  (63)
+
+	.  reduce 63
+
+
+state 125
+	operator : mul .  (64)
+
+	.  reduce 64
+
+
+state 126
+	operator : div .  (65)
+
+	.  reduce 65
+
+
+state 127
+	operator : rel .  (66)
+
+	.  reduce 66
+
+
+state 128
+	operator : log .  (67)
+
+	.  reduce 67
+
+
+state 129
+	stmt : PRINT expr ';' .  (39)
+
+	.  reduce 39
+
+
+state 130
+	stmt : READ var_ref ';' .  (40)
+
+	.  reduce 40
+
+
+state 131
+	whileloop : WHILE expr DO . stmts_ END DO  (85)
+	stmts_ : .  (38)
+
+	ID  shift 57
+	BGN  shift 19
+	FOR  shift 58
+	IF  shift 59
+	PRINT  shift 60
+	READ  shift 61
+	RETURN  shift 62
+	WHILE  shift 63
+	END  reduce 38
 
 	compound_stmt  goto 64
 	stmts_  goto 149
@@ -1477,137 +1560,38 @@ state 123
 	rtrn  goto 72
 
 
-state 124
-	expr : expr operator . expr  (58)
+state 132
+	stmt : var_ref ASSIGN expr . ';'  (45)
+	expr : expr . operator expr  (57)
 
-	ID  shift 57
-	INT  shift 23
-	OCTINT  shift 24
-	FLOAT  shift 25
-	SCI  shift 26
-	STR  shift 27
-	'('  shift 85
-	'-'  shift 28
-	FALSE  shift 31
-	TRUE  shift 35
+	';'  shift 150
+	'+'  shift 107
+	'-'  shift 108
+	'*'  shift 109
+	'/'  shift 110
+	MOD  shift 111
+	'<'  shift 112
+	LE  shift 113
+	NE  shift 114
+	GE  shift 115
+	'>'  shift 116
+	'='  shift 117
+	AND  shift 118
+	OR  shift 119
+	NOT  shift 120
 	.  error
 
-	literal_const  goto 86
-	const  goto 39
-	pos_const  goto 40
-	neg_const  goto 41
-	neg  goto 42
-	expr  goto 150
-	var_ref  goto 88
-	procedure  goto 89
-	item  goto 90
-
-
-state 125
-	operator : add .  (63)
-
-	.  reduce 63
-
-
-state 126
-	operator : sub .  (64)
-
-	.  reduce 64
-
-
-state 127
-	operator : mul .  (65)
-
-	.  reduce 65
-
-
-state 128
-	operator : div .  (66)
-
-	.  reduce 66
-
-
-state 129
-	operator : rel .  (67)
-
-	.  reduce 67
-
-
-state 130
-	operator : log .  (68)
-
-	.  reduce 68
-
-
-state 131
-	stmt : PRINT expr ';' .  (40)
-
-	.  reduce 40
-
-
-state 132
-	stmt : READ var_ref ';' .  (41)
-
-	.  reduce 41
+	operator  goto 122
+	add  goto 123
+	sub  goto 124
+	mul  goto 125
+	div  goto 126
+	rel  goto 127
+	log  goto 128
 
 
 state 133
-	whileloop : WHILE expr DO . stmts_ END DO  (86)
-	stmts_ : .  (39)
-
-	ID  shift 57
-	BGN  shift 19
-	FOR  shift 58
-	IF  shift 59
-	PRINT  shift 60
-	READ  shift 61
-	RETURN  shift 62
-	WHILE  shift 63
-	END  reduce 39
-
-	compound_stmt  goto 64
-	stmts_  goto 151
-	stmt  goto 66
-	var_ref  goto 67
-	condition  goto 68
-	whileloop  goto 69
-	forloop  goto 70
-	procedure  goto 71
-	rtrn  goto 72
-
-
-state 134
-	stmt : var_ref ASSIGN expr . ';'  (46)
-	expr : expr . operator expr  (58)
-
-	';'  shift 152
-	'+'  shift 109
-	'-'  shift 110
-	'*'  shift 111
-	'/'  shift 112
-	MOD  shift 113
-	'<'  shift 114
-	LE  shift 115
-	NE  shift 116
-	GE  shift 117
-	'>'  shift 118
-	'='  shift 119
-	AND  shift 120
-	OR  shift 121
-	NOT  shift 122
-	.  error
-
-	operator  goto 124
-	add  goto 125
-	sub  goto 126
-	mul  goto 127
-	div  goto 128
-	rel  goto 129
-	log  goto 130
-
-
-state 135
-	arr_type : ARRAY INT TO INT OF . type  (14)
+	arr_type : ARRAY INT TO INT OF . type  (13)
 
 	ARRAY  shift 29
 	BOOLEAN  shift 30
@@ -1616,29 +1600,29 @@ state 135
 	STRING  shift 34
 	.  error
 
-	scalar_type  goto 75
-	arr_type  goto 76
-	type  goto 153
+	type  goto 151
+	scalar_type  goto 37
+	arr_type  goto 38
 
 
-state 136
-	function : ID '(' formal_args_ ')' ';' compound_stmt END . ID  (23)
+state 134
+	function : ID '(' formal_args_ ')' ';' compound_stmt END . ID  (22)
 
-	ID  shift 154
+	ID  shift 152
 	.  error
 
 
-state 137
-	function : ID '(' formal_args_ ')' ':' scalar_type ';' . compound_stmt END ID  (22)
+state 135
+	function : ID '(' formal_args_ ')' ':' scalar_type ';' . compound_stmt END ID  (21)
 
 	BGN  shift 19
 	.  error
 
-	compound_stmt  goto 155
+	compound_stmt  goto 153
 
 
-state 138
-	exprcs : ',' . expr exprcs  (55)
+state 136
+	exprcs : ',' . expr exprcs  (54)
 
 	ID  shift 57
 	INT  shift 23
@@ -1646,262 +1630,262 @@ state 138
 	FLOAT  shift 25
 	SCI  shift 26
 	STR  shift 27
-	'('  shift 85
+	'('  shift 83
 	'-'  shift 28
 	FALSE  shift 31
 	TRUE  shift 35
 	.  error
 
-	literal_const  goto 86
-	const  goto 39
-	pos_const  goto 40
-	neg_const  goto 41
-	neg  goto 42
-	expr  goto 156
-	var_ref  goto 88
-	procedure  goto 89
-	item  goto 90
+	literal_const  goto 84
+	const  goto 40
+	pos_const  goto 41
+	neg_const  goto 42
+	neg  goto 43
+	expr  goto 154
+	var_ref  goto 86
+	procedure  goto 87
+	item  goto 88
+
+
+state 137
+	exprcs_ : expr exprcs .  (52)
+
+	.  reduce 52
+
+
+state 138
+	procedure : ID '(' exprcs_ ')' .  (93)
+
+	.  reduce 93
 
 
 state 139
-	exprcs_ : expr exprcs .  (53)
+	exprbs_ : '[' expr ']' . exprbs_  (50)
+	exprbs_ : .  (51)
 
-	.  reduce 53
+	'['  shift 79
+	','  reduce 51
+	';'  reduce 51
+	')'  reduce 51
+	']'  reduce 51
+	'+'  reduce 51
+	'-'  reduce 51
+	'*'  reduce 51
+	'/'  reduce 51
+	MOD  reduce 51
+	ASSIGN  reduce 51
+	'<'  reduce 51
+	LE  reduce 51
+	NE  reduce 51
+	GE  reduce 51
+	'>'  reduce 51
+	'='  reduce 51
+	AND  reduce 51
+	OR  reduce 51
+	NOT  reduce 51
+	DO  reduce 51
+	THEN  reduce 51
+
+	exprbs_  goto 155
 
 
 state 140
-	procedure : ID '(' exprcs_ ')' .  (94)
-
-	.  reduce 94
-
-
-state 141
-	exprbs_ : '[' expr ']' . exprbs_  (51)
-	exprbs_ : .  (52)
-
-	'['  shift 81
-	','  reduce 52
-	';'  reduce 52
-	')'  reduce 52
-	']'  reduce 52
-	'+'  reduce 52
-	'-'  reduce 52
-	'*'  reduce 52
-	'/'  reduce 52
-	MOD  reduce 52
-	ASSIGN  reduce 52
-	'<'  reduce 52
-	LE  reduce 52
-	NE  reduce 52
-	GE  reduce 52
-	'>'  reduce 52
-	'='  reduce 52
-	AND  reduce 52
-	OR  reduce 52
-	NOT  reduce 52
-	DO  reduce 52
-	THEN  reduce 52
-
-	exprbs_  goto 157
-
-
-state 142
-	pos_int : INT .  (90)
-
-	.  reduce 90
-
-
-state 143
-	pos_int : OCTINT .  (91)
-
-	.  reduce 91
-
-
-state 144
-	neg_int : neg . pos_int  (92)
-
-	INT  shift 142
-	OCTINT  shift 143
-	.  error
-
-	pos_int  goto 158
-
-
-state 145
-	forloop : FOR ID ASSIGN int_const . TO int_const DO stmts_ END DO  (87)
-
-	TO  shift 159
-	.  error
-
-
-state 146
-	int_const : pos_int .  (88)
-
-	.  reduce 88
-
-
-state 147
-	int_const : neg_int .  (89)
+	pos_int : INT .  (89)
 
 	.  reduce 89
 
 
-state 148
-	expr : '(' expr ')' .  (57)
+state 141
+	pos_int : OCTINT .  (90)
 
-	.  reduce 57
+	.  reduce 90
+
+
+state 142
+	neg_int : neg . pos_int  (91)
+
+	INT  shift 140
+	OCTINT  shift 141
+	.  error
+
+	pos_int  goto 156
+
+
+state 143
+	forloop : FOR ID ASSIGN int_const . TO int_const DO stmts_ END DO  (86)
+
+	TO  shift 157
+	.  error
+
+
+state 144
+	int_const : pos_int .  (87)
+
+	.  reduce 87
+
+
+state 145
+	int_const : neg_int .  (88)
+
+	.  reduce 88
+
+
+state 146
+	expr : '(' expr ')' .  (56)
+
+	.  reduce 56
+
+
+state 147
+	condition : IF expr THEN stmts_ . ELSE stmts_ END IF  (83)
+	condition : IF expr THEN stmts_ . END IF  (84)
+
+	ELSE  shift 158
+	END  shift 159
+	.  error
+
+
+148: shift/reduce conflict (shift 107, reduce 57) on '+'
+148: shift/reduce conflict (shift 108, reduce 57) on '-'
+148: shift/reduce conflict (shift 109, reduce 57) on '*'
+148: shift/reduce conflict (shift 110, reduce 57) on '/'
+148: shift/reduce conflict (shift 111, reduce 57) on MOD
+148: shift/reduce conflict (shift 112, reduce 57) on '<'
+148: shift/reduce conflict (shift 113, reduce 57) on LE
+148: shift/reduce conflict (shift 114, reduce 57) on NE
+148: shift/reduce conflict (shift 115, reduce 57) on GE
+148: shift/reduce conflict (shift 116, reduce 57) on '>'
+148: shift/reduce conflict (shift 117, reduce 57) on '='
+148: shift/reduce conflict (shift 118, reduce 57) on AND
+148: shift/reduce conflict (shift 119, reduce 57) on OR
+148: shift/reduce conflict (shift 120, reduce 57) on NOT
+state 148
+	expr : expr . operator expr  (57)
+	expr : expr operator expr .  (57)
+
+	'+'  shift 107
+	'-'  shift 108
+	'*'  shift 109
+	'/'  shift 110
+	MOD  shift 111
+	'<'  shift 112
+	LE  shift 113
+	NE  shift 114
+	GE  shift 115
+	'>'  shift 116
+	'='  shift 117
+	AND  shift 118
+	OR  shift 119
+	NOT  shift 120
+	','  reduce 57
+	';'  reduce 57
+	')'  reduce 57
+	']'  reduce 57
+	DO  reduce 57
+	THEN  reduce 57
+
+	operator  goto 122
+	add  goto 123
+	sub  goto 124
+	mul  goto 125
+	div  goto 126
+	rel  goto 127
+	log  goto 128
 
 
 state 149
-	condition : IF expr THEN stmts_ . ELSE stmts_ END IF  (84)
-	condition : IF expr THEN stmts_ . END IF  (85)
+	whileloop : WHILE expr DO stmts_ . END DO  (85)
 
-	ELSE  shift 160
+	END  shift 160
+	.  error
+
+
+state 150
+	stmt : var_ref ASSIGN expr ';' .  (45)
+
+	.  reduce 45
+
+
+state 151
+	arr_type : ARRAY INT TO INT OF type .  (13)
+
+	.  reduce 13
+
+
+state 152
+	function : ID '(' formal_args_ ')' ';' compound_stmt END ID .  (22)
+
+	.  reduce 22
+
+
+state 153
+	function : ID '(' formal_args_ ')' ':' scalar_type ';' compound_stmt . END ID  (21)
+
 	END  shift 161
 	.  error
 
 
-150: shift/reduce conflict (shift 109, reduce 58) on '+'
-150: shift/reduce conflict (shift 110, reduce 58) on '-'
-150: shift/reduce conflict (shift 111, reduce 58) on '*'
-150: shift/reduce conflict (shift 112, reduce 58) on '/'
-150: shift/reduce conflict (shift 113, reduce 58) on MOD
-150: shift/reduce conflict (shift 114, reduce 58) on '<'
-150: shift/reduce conflict (shift 115, reduce 58) on LE
-150: shift/reduce conflict (shift 116, reduce 58) on NE
-150: shift/reduce conflict (shift 117, reduce 58) on GE
-150: shift/reduce conflict (shift 118, reduce 58) on '>'
-150: shift/reduce conflict (shift 119, reduce 58) on '='
-150: shift/reduce conflict (shift 120, reduce 58) on AND
-150: shift/reduce conflict (shift 121, reduce 58) on OR
-150: shift/reduce conflict (shift 122, reduce 58) on NOT
-state 150
-	expr : expr . operator expr  (58)
-	expr : expr operator expr .  (58)
-
-	'+'  shift 109
-	'-'  shift 110
-	'*'  shift 111
-	'/'  shift 112
-	MOD  shift 113
-	'<'  shift 114
-	LE  shift 115
-	NE  shift 116
-	GE  shift 117
-	'>'  shift 118
-	'='  shift 119
-	AND  shift 120
-	OR  shift 121
-	NOT  shift 122
-	','  reduce 58
-	';'  reduce 58
-	')'  reduce 58
-	']'  reduce 58
-	DO  reduce 58
-	THEN  reduce 58
-
-	operator  goto 124
-	add  goto 125
-	sub  goto 126
-	mul  goto 127
-	div  goto 128
-	rel  goto 129
-	log  goto 130
-
-
-state 151
-	whileloop : WHILE expr DO stmts_ . END DO  (86)
-
-	END  shift 162
-	.  error
-
-
-state 152
-	stmt : var_ref ASSIGN expr ';' .  (46)
-
-	.  reduce 46
-
-
-state 153
-	arr_type : ARRAY INT TO INT OF type .  (14)
-
-	.  reduce 14
-
-
 state 154
-	function : ID '(' formal_args_ ')' ';' compound_stmt END ID .  (23)
+	exprcs : ',' expr . exprcs  (54)
+	expr : expr . operator expr  (57)
+	exprcs : .  (55)
 
-	.  reduce 23
+	','  shift 136
+	'+'  shift 107
+	'-'  shift 108
+	'*'  shift 109
+	'/'  shift 110
+	MOD  shift 111
+	'<'  shift 112
+	LE  shift 113
+	NE  shift 114
+	GE  shift 115
+	'>'  shift 116
+	'='  shift 117
+	AND  shift 118
+	OR  shift 119
+	NOT  shift 120
+	')'  reduce 55
+
+	exprcs  goto 162
+	operator  goto 122
+	add  goto 123
+	sub  goto 124
+	mul  goto 125
+	div  goto 126
+	rel  goto 127
+	log  goto 128
 
 
 state 155
-	function : ID '(' formal_args_ ')' ':' scalar_type ';' compound_stmt . END ID  (22)
+	exprbs_ : '[' expr ']' exprbs_ .  (50)
 
-	END  shift 163
-	.  error
+	.  reduce 50
 
 
 state 156
-	exprcs : ',' expr . exprcs  (55)
-	expr : expr . operator expr  (58)
-	exprcs : .  (56)
+	neg_int : neg pos_int .  (91)
 
-	','  shift 138
-	'+'  shift 109
-	'-'  shift 110
-	'*'  shift 111
-	'/'  shift 112
-	MOD  shift 113
-	'<'  shift 114
-	LE  shift 115
-	NE  shift 116
-	GE  shift 117
-	'>'  shift 118
-	'='  shift 119
-	AND  shift 120
-	OR  shift 121
-	NOT  shift 122
-	')'  reduce 56
-
-	exprcs  goto 164
-	operator  goto 124
-	add  goto 125
-	sub  goto 126
-	mul  goto 127
-	div  goto 128
-	rel  goto 129
-	log  goto 130
+	.  reduce 91
 
 
 state 157
-	exprbs_ : '[' expr ']' exprbs_ .  (51)
+	forloop : FOR ID ASSIGN int_const TO . int_const DO stmts_ END DO  (86)
 
-	.  reduce 51
-
-
-state 158
-	neg_int : neg pos_int .  (92)
-
-	.  reduce 92
-
-
-state 159
-	forloop : FOR ID ASSIGN int_const TO . int_const DO stmts_ END DO  (87)
-
-	INT  shift 142
-	OCTINT  shift 143
+	INT  shift 140
+	OCTINT  shift 141
 	'-'  shift 28
 	.  error
 
-	neg  goto 144
-	int_const  goto 165
-	pos_int  goto 146
-	neg_int  goto 147
+	neg  goto 142
+	int_const  goto 163
+	pos_int  goto 144
+	neg_int  goto 145
 
 
-state 160
-	condition : IF expr THEN stmts_ ELSE . stmts_ END IF  (84)
-	stmts_ : .  (39)
+state 158
+	condition : IF expr THEN stmts_ ELSE . stmts_ END IF  (83)
+	stmts_ : .  (38)
 
 	ID  shift 57
 	BGN  shift 19
@@ -1911,10 +1895,10 @@ state 160
 	READ  shift 61
 	RETURN  shift 62
 	WHILE  shift 63
-	END  reduce 39
+	END  reduce 38
 
 	compound_stmt  goto 64
-	stmts_  goto 166
+	stmts_  goto 164
 	stmt  goto 66
 	var_ref  goto 67
 	condition  goto 68
@@ -1924,68 +1908,68 @@ state 160
 	rtrn  goto 72
 
 
-state 161
-	condition : IF expr THEN stmts_ END . IF  (85)
+state 159
+	condition : IF expr THEN stmts_ END . IF  (84)
 
-	IF  shift 167
+	IF  shift 165
+	.  error
+
+
+state 160
+	whileloop : WHILE expr DO stmts_ END . DO  (85)
+
+	DO  shift 166
+	.  error
+
+
+state 161
+	function : ID '(' formal_args_ ')' ':' scalar_type ';' compound_stmt END . ID  (21)
+
+	ID  shift 167
 	.  error
 
 
 state 162
-	whileloop : WHILE expr DO stmts_ END . DO  (86)
+	exprcs : ',' expr exprcs .  (54)
+
+	.  reduce 54
+
+
+state 163
+	forloop : FOR ID ASSIGN int_const TO int_const . DO stmts_ END DO  (86)
 
 	DO  shift 168
 	.  error
 
 
-state 163
-	function : ID '(' formal_args_ ')' ':' scalar_type ';' compound_stmt END . ID  (22)
-
-	ID  shift 169
-	.  error
-
-
 state 164
-	exprcs : ',' expr exprcs .  (55)
+	condition : IF expr THEN stmts_ ELSE stmts_ . END IF  (83)
 
-	.  reduce 55
+	END  shift 169
+	.  error
 
 
 state 165
-	forloop : FOR ID ASSIGN int_const TO int_const . DO stmts_ END DO  (87)
+	condition : IF expr THEN stmts_ END IF .  (84)
 
-	DO  shift 170
-	.  error
+	.  reduce 84
 
 
 state 166
-	condition : IF expr THEN stmts_ ELSE stmts_ . END IF  (84)
-
-	END  shift 171
-	.  error
-
-
-state 167
-	condition : IF expr THEN stmts_ END IF .  (85)
+	whileloop : WHILE expr DO stmts_ END DO .  (85)
 
 	.  reduce 85
 
 
+state 167
+	function : ID '(' formal_args_ ')' ':' scalar_type ';' compound_stmt END ID .  (21)
+
+	.  reduce 21
+
+
 state 168
-	whileloop : WHILE expr DO stmts_ END DO .  (86)
-
-	.  reduce 86
-
-
-state 169
-	function : ID '(' formal_args_ ')' ':' scalar_type ';' compound_stmt END ID .  (22)
-
-	.  reduce 22
-
-
-state 170
-	forloop : FOR ID ASSIGN int_const TO int_const DO . stmts_ END DO  (87)
-	stmts_ : .  (39)
+	forloop : FOR ID ASSIGN int_const TO int_const DO . stmts_ END DO  (86)
+	stmts_ : .  (38)
 
 	ID  shift 57
 	BGN  shift 19
@@ -1995,10 +1979,10 @@ state 170
 	READ  shift 61
 	RETURN  shift 62
 	WHILE  shift 63
-	END  reduce 39
+	END  reduce 38
 
 	compound_stmt  goto 64
-	stmts_  goto 172
+	stmts_  goto 170
 	stmt  goto 66
 	var_ref  goto 67
 	condition  goto 68
@@ -2008,41 +1992,41 @@ state 170
 	rtrn  goto 72
 
 
-state 171
-	condition : IF expr THEN stmts_ ELSE stmts_ END . IF  (84)
+state 169
+	condition : IF expr THEN stmts_ ELSE stmts_ END . IF  (83)
 
-	IF  shift 173
+	IF  shift 171
 	.  error
 
 
-state 172
-	forloop : FOR ID ASSIGN int_const TO int_const DO stmts_ . END DO  (87)
+state 170
+	forloop : FOR ID ASSIGN int_const TO int_const DO stmts_ . END DO  (86)
 
-	END  shift 174
+	END  shift 172
+	.  error
+
+
+state 171
+	condition : IF expr THEN stmts_ ELSE stmts_ END IF .  (83)
+
+	.  reduce 83
+
+
+state 172
+	forloop : FOR ID ASSIGN int_const TO int_const DO stmts_ END . DO  (86)
+
+	DO  shift 173
 	.  error
 
 
 state 173
-	condition : IF expr THEN stmts_ ELSE stmts_ END IF .  (84)
+	forloop : FOR ID ASSIGN int_const TO int_const DO stmts_ END DO .  (86)
 
-	.  reduce 84
-
-
-state 174
-	forloop : FOR ID ASSIGN int_const TO int_const DO stmts_ END . DO  (87)
-
-	DO  shift 175
-	.  error
+	.  reduce 86
 
 
-state 175
-	forloop : FOR ID ASSIGN int_const TO int_const DO stmts_ END DO .  (87)
-
-	.  reduce 87
+State 148 contains 14 shift/reduce conflicts.
 
 
-State 150 contains 14 shift/reduce conflicts.
-
-
-53 terminals, 45 nonterminals
-95 grammar rules, 176 states
+52 terminals, 45 nonterminals
+94 grammar rules, 174 states

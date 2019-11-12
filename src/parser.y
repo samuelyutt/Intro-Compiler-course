@@ -18,17 +18,14 @@ static void yyerror(const char *msg);
 %token ',' ';' ':' '(' ')' '[' ']'
 %left '+' '-' '*' '/' MOD ASSIGN '<' LE NE GE '>' '=' AND OR NOT
 %token ARRAY BGN BOOLEAN DEF DO ELSE END FALSE FOR INTEGER IF OF PRINT READ REAL STRING THEN TO TRUE RETURN VAR WHILE
-%token "\n"
 
 %%
 program         : ID ';' dec_vars_consts_ functions_ compound_stmt END ID;
 
 dec_vars_consts_: dec_var_const dec_vars_consts_ |;
-dec_var_const   : dec_var
-                | dec_varconst;
+dec_var_const   : dec_var | dec_varconst;
 
-dec_var         : VAR idlist ':' scalar_type ';'
-                | VAR idlist ':' arr_type ';';
+dec_var         : VAR idlist ':' type ';';
 
 type            : scalar_type | arr_type;
 scalar_type     : INTEGER | REAL | STRING | BOOLEAN;
@@ -49,12 +46,10 @@ formal_args_    : formal_arg formal_args_ |;
 formal_arg      : idlist ':' type;
 
 idlist          : ID ids_;
-ids_            : ',' ID ids_
-                |;
+ids_            : ',' ID ids_ |;
 
 compound_stmt   : BGN dec_vars_consts_ stmts_ END;
-stmts_          : stmt stmts_
-                |;
+stmts_          : stmt stmts_ |;
 stmt            : PRINT expr ';'
                 | READ var_ref ';'
                 | compound_stmt
