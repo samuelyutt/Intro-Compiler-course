@@ -51,6 +51,13 @@ dec_varconst    : VAR idlist ':' literal_const ';';
 literal_const   : const | STR | TRUE | FALSE;
 ```
 
+#### 3. Data types
+```c=
+type            : scalar_type | arr_type;
+scalar_type     : INTEGER | REAL | STRING | BOOLEAN;
+arr_type        : ARRAY INT TO INT OF type;
+```
+
 ### Statements
 #### 1. Compound
 ```c=
