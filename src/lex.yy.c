@@ -907,7 +907,7 @@ YY_RULE_SETUP
 case 14:
 YY_RULE_SETUP
 #line 46 "scanner.l"
-{ TOKEN_CHAR('<'); return ; }
+{ TOKEN_CHAR('<'); return '<'; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
@@ -1111,7 +1111,7 @@ YY_RULE_SETUP
     }
     *StrPtr = '\0';
     TOKEN_STRING(string, StringLiteral);
-    return STRING;
+    return STR;
 }
 	YY_BREAK
 /* Whitespace */

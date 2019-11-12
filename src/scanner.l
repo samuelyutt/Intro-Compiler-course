@@ -43,7 +43,7 @@ float {integer}\.(0|[0-9]*[1-9])
 "/"   { TOKEN_CHAR('/'); return '/'; }
 "mod" { TOKEN(mod); return MOD; }
 ":="  { TOKEN(:=); return ASSIGN; }
-"<"   { TOKEN_CHAR('<'); return ; }
+"<"   { TOKEN_CHAR('<'); return '<'; }
 "<="  { TOKEN(<=); return LE; }
 "<>"  { TOKEN(<>); return NE; }
 ">="  { TOKEN(>=); return GE; }
@@ -109,7 +109,7 @@ float {integer}\.(0|[0-9]*[1-9])
     }
     *StrPtr = '\0';
     TOKEN_STRING(string, StringLiteral);
-    return STRING;
+    return STR;
 }
     /* Whitespace */
 [ \t]+ { LIST; }

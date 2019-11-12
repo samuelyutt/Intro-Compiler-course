@@ -3,7 +3,7 @@
 #define OCTINT 259
 #define FLOAT 260
 #define SCI 261
-#define STRING 262
+#define STR 262
 #define MOD 263
 #define ASSIGN 264
 #define LE 265
@@ -27,9 +27,10 @@
 #define PRINT 283
 #define READ 284
 #define REAL 285
-#define THEN 286
-#define TO 287
-#define TRUE 288
-#define RETURN 289
-#define VAR 290
-#define WHILE 291
+#define STRING 286
+#define THEN 287
+#define TO 288
+#define TRUE 289
+#define RETURN 290
+#define VAR 291
+#define WHILE 292

@@ -14,7 +14,7 @@ extern int yylex(void);
 static void yyerror(const char *msg);
 %}
 
-%token ID INT OCTINT FLOAT SCI STRING
+%token ID INT OCTINT FLOAT SCI STR
 %token ',' ';' ':' '(' ')' '[' ']'
 %left '+' '-' '*' '/' MOD ASSIGN '<' LE NE GE '>' '=' AND OR NOT
 %token ARRAY BGN BOOLEAN DEF DO ELSE END FALSE FOR INTEGER IF OF PRINT READ REAL STRING THEN TO TRUE RETURN VAR WHILE
@@ -28,14 +28,22 @@ program         : ID ';' vars_consts_ functions_ compound_statment END ID;
 vars_consts_    : var_const vars_consts_
                 |;
 var_const       : variable
-                | constant;
+                | varconstant;
+
+variable        : VAR idlist ':' scalar_type ';'
+                | VAR idlist ':' arr_type ';';
+
+type            : scalar_type | arr_type;
+scalar_type     : INTEGER | REAL | STRING | BOOLEAN;
+arr_type        : ARRAY INT TO INT OF type;
+
+varconstant         : VAR idlist ':' literal_constant ';';
+literal_constant    : constant | STR | TRUE | FALSE;
 
 functions_      : function functions_
                 |;
-function        : ID '(' formal_args_ ')' ':' scalar_type ';' compound_statment END ID;
-
-type            : scalar_type | arr;
-scalar_type     : INTEGER | REAL | STRING | BOOLEAN;
+function        : ID '(' formal_args_ ')' ':' scalar_type ';' compound_statment END ID
+                | ID '(' formal_args_ ')' ';' compound_statment END ID;
 
 constant        : pos_constant | neg_constant;
 pos_constant    : INT | OCTINT | FLOAT | SCI;
@@ -49,50 +57,39 @@ idlist          : ID ids_;
 ids_            : ',' ID ids_
                 |;
 
-variable        : VAR idlist ':' scalar_type ';'
-                | vararr;
-
-vararr          : VAR idlist ':' arr ';';
-
-arr             : ARRAY INT TO INT OF type;
-
-constant        : VAR idlist ':' literal_constant ';';
-
-literal_constant    : INT
-                    | OCTINT
-                    | FLOAT
-                    | SCI
-                    | STRING
-                    | TRUE
-                    | FALSE;
-
 compound_statment   : BGN vars_consts_ statements_ END;
 statements_         : statement statements_
                     |;
-statement           : var_ref ASSIGN expr ';'
-                    | PRINT var_ref ';'
-                    | PRINT expr ';'
-                    | READ var_ref ';';
+statement           : PRINT expr ';'
+                    | READ var_ref ';'
+                    | compound_statment
+                    | condition
+                    | whileloop
+                    | forloop
+                    | expr ';'
+                    | rtrn ';';
 
-var_ref         : ID | arr_ref;
+var_ref         : ID arr_ref;
 
-arr_ref         : ID exprbs_;
+arr_ref         : exprbs_;
 
 exprbs_         : '[' expr ']' exprbs_
                 |;
 
-exprcs          : expr exprcs_;
-exprcs_         : ',' expr exprcs_
+exprcs_         : expr exprcs
+                |;
+exprcs          : ',' expr exprcs
                 |;
 
-exprs_          : expr exprs_
-                |;
-expr            : ID ASSIGN items ';'
-                | items;
+
+//exprs_          : expr exprs_
+//                |;
+expr            : items
+                | var_ref ASSIGN items;
 items           : '(' items ')'
                 | items operator items
                 | item;
-item            : constant | TRUE | FALSE | STRING;
+item            : var_ref | procedure | literal_constant;
 
 operator        : add | sub | mul | div | rel | log;
 neg             : '-';
@@ -113,9 +110,9 @@ int_const       : pos_int | neg_int;
 pos_int         : INT | OCTINT;
 neg_int         : neg pos_int;
 
-rtrn            : RETURN expr ';';
+rtrn            : RETURN expr;
 
-procedure       : ID '(' exprcs ')' ';';
+procedure       : ID '(' exprcs_ ')';
 
 %%
 
