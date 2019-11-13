@@ -69,11 +69,14 @@ exprbs_         : '[' expr ']' exprbs_ |;
 exprcs_         : expr exprcs |;
 exprcs          : ',' expr exprcs |;
 
-expr            : '(' expr ')'
+expr            : not_neg_ '(' expr ')'
                 | expr operator expr
-                | item;
+                | not_neg_ item
+                | not_ TRUE | FALSE
+                | const
+                | STR;
 
-item            : var_ref | procedure | literal_const;
+item            : var_ref | procedure;
 
 operator        : add | sub | mul | div | rel | log;
 neg             : '-';
@@ -82,7 +85,9 @@ sub             : '-';
 mul             : '*';
 div             : '/' | MOD;
 rel             : '<' | LE | NE | GE | '>' | '=';
-log             : AND | OR | NOT;
+log             : AND | OR;
+not_            : NOT |;
+not_neg_        : '-' | not_;
 
 condition       : IF expr THEN stmts_ ELSE stmts_ END IF
                 | IF expr THEN stmts_ END IF;
