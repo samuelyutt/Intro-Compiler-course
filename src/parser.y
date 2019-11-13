@@ -72,9 +72,10 @@ exprcs          : ',' expr exprcs |;
 expr            : not_neg_ '(' expr ')'
                 | expr operator expr
                 | not_neg_ item
-                | not_ TRUE | FALSE
-                | const
-                | STR;
+                | const 
+                | not_neg_ STR 
+                | not_neg_ TRUE 
+                | not_neg_ FALSE;
 
 item            : var_ref | procedure;
 
@@ -86,8 +87,7 @@ mul             : '*';
 div             : '/' | MOD;
 rel             : '<' | LE | NE | GE | '>' | '=';
 log             : AND | OR;
-not_            : NOT |;
-not_neg_        : '-' | not_;
+not_neg_        : NOT | '-' |;
 
 condition       : IF expr THEN stmts_ ELSE stmts_ END IF
                 | IF expr THEN stmts_ END IF;
