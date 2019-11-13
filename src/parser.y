@@ -87,7 +87,7 @@ mul             : '*';
 div             : '/' | MOD;
 rel             : '<' | LE | NE | GE | '>' | '=';
 log             : AND | OR;
-not_neg_        : NOT | '-' |;
+not_neg_        : NOT | neg |;
 
 condition       : IF expr THEN stmts_ ELSE stmts_ END IF
                 | IF expr THEN stmts_ END IF;
