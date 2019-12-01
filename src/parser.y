@@ -1,10 +1,14 @@
 %{
-#include "include/AST/program.h"
+
+#include "include/AST/ast.hpp"
+#include "include/AST/program.hpp"
 #include "include/core/error.h"
+#include "include/visitor/dumpvisitor.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <iostream>
 
 #define YYLTYPE yyltype
 
@@ -23,13 +27,15 @@ extern char Buffer[512];
 extern FILE *yyin;
 extern char *yytext;
 
-extern int yylex(void);
+extern "C" int yylex(void);
+extern "C" int yyparse();
 static void yyerror(const char *msg);
 
-static AstNode *root;
+static ProgramNode *root;
 %}
 
 %locations
+%code requires{ #include "AST/program.hpp"}
 
     /* Delimiter */
 %token COMMA SEMICOLON COLON
@@ -62,6 +68,12 @@ static AstNode *root;
 %token REAL_LITERAL
 %token STRING_LITERAL
 
+%union {
+    char *str;
+    ProgramNode* program;
+}
+%type<program> Program
+%type<str> ProgramName
 %%
     /*
        Program Units
@@ -69,7 +81,8 @@ static AstNode *root;
 
 Program:
     ProgramName SEMICOLON ProgramBody END ProgramName {
-        root = newProgramNode();
+        $$ = root = new ProgramNode(@1.first_line, @1.first_column);
+        $$->name.assign($1);
     }
 ;
 
@@ -374,8 +387,11 @@ int main(int argc, const char *argv[]) {
     yyin = fp;
     yyparse();
 
-    freeProgramNode(root);
+    //freeProgramNode(root);
+    DumpVisitor dvisitor;
+    root->accept(dvisitor);
 
+    std::cout << "CPP works!" << std::endl;
     printf("\n"
            "|--------------------------------|\n"
            "|  There is no syntactic error!  |\n"

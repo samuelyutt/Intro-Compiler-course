@@ -1,7 +1,7 @@
-CC      = gcc
+CC      = g++
 LEX     = flex
 YACC    = bison
-CFLAGS  = -Wall -std=c11
+CFLAGS  = -Wall -std=c++11
 LIBS    = -lfl -ly
 INCLUDE = -Iinclude
 
@@ -9,22 +9,22 @@ SCANNER = scanner
 PARSER  = parser
 
 ASTDIR = src/AST/
-AST := $(shell find $(ASTDIR) -name '*.c')
+AST := $(shell find $(ASTDIR) -name '*.cpp')
 
 VISITORDIR = src/visitor/
-VISITOR := $(shell find $(VISITORDIR) -name '*.c')
+VISITOR := $(shell find $(VISITORDIR) -name '*.cpp')
 
 SRC := $(AST) \
        $(VISITOR)
 
 EXEC = $(PARSER)
 OBJS = $(PARSER:=.c) \
-       $(SCANNER:=.c) \
-       $(SRC)
+       $(SCANNER:=.c)
+OBJS_CPP = $(SRC)
 
 # Substitution reference
-DEPS := $(OBJS:%.c=%.d)
-OBJS := $(OBJS:%.c=%.o)
+DEPS := $(OBJS:%.c=%.d) $(OBJS_CPP:%.cpp=%.d)
+OBJS := $(OBJS:%.c=%.o) $(OBJS_CPP:%.cpp=%.o)
 
 all: $(EXEC)
 
@@ -36,6 +36,9 @@ $(PARSER).c: %.c: %.y
 	$(YACC) -o $@ --defines=parser.h -v $<
 
 %.o: %.c
+	$(CC) -o $@ $(CFLAGS) $(INCLUDE) -c -MMD $<
+
+%.o: %.cpp
 	$(CC) -o $@ $(CFLAGS) $(INCLUDE) -c -MMD $<
 
 $(EXEC): $(OBJS)
