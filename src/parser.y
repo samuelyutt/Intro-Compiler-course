@@ -9,6 +9,8 @@
 #include "include/AST/expression.hpp"
 #include "include/AST/variablereference.hpp"
 #include "include/AST/binaryoperator.hpp"
+#include "include/AST/unaryoperator.hpp"
+#include "include/AST/functioncallexpr.hpp"
 /*#include "include/AST/compoundstatement.hpp"
 #include "include/AST/read.hpp"
 #include "include/AST/return.hpp"
@@ -53,7 +55,7 @@ extern "C" int yyparse();
 static void yyerror(const char *msg);
 
 static ProgramNode *root;
-static BinaryOperatorNode *t;
+static FunctionCallExprNode *t;
 //static ConstantValueNode *t2;
 
 //std::vector<VariableNode*>      v_variable_node;
@@ -69,6 +71,8 @@ static BinaryOperatorNode *t;
     #include "AST/expression.hpp"
     #include "AST/variablereference.hpp"
     #include "AST/binaryoperator.hpp"
+    #include "AST/unaryoperator.hpp"
+    #include "AST/functioncallexpr.hpp"
     //#include "AST/.hpp"
 }
 
@@ -112,6 +116,7 @@ static BinaryOperatorNode *t;
     ExpressionNode*         expression_node;
     VariableNode*           variable_node;
     VariableReferenceNode*  variablereference_node;
+    FunctionCallExprNode*   functioncallexpr_node;
 
     std::vector<DeclarationNode*>*      v_declaration_node;
     std::vector<VariableNode*>*         v_variable_node;
@@ -127,7 +132,10 @@ static BinaryOperatorNode *t;
 %type<v_variable_node>          IdList
 %type<expression_node>          Expression
 %type<v_expression_node>        ArrForm
+%type<v_expression_node>        Expressions
+%type<v_expression_node>        ExpressionList
 %type<variablereference_node>   VariableReference
+%type<functioncallexpr_node>    FunctionCall
 
 %type<str>                  ProgramName
 %type<str>                  INT_LITERAL
@@ -442,19 +450,35 @@ FunctionInvokation:
 ;
 
 FunctionCall:
-    ID L_PARENTHESIS ExpressionList R_PARENTHESIS
+    ID L_PARENTHESIS ExpressionList R_PARENTHESIS {
+        $$ = new FunctionCallExprNode(@1.first_line, @1.first_column);
+        $$->name.assign($1);
+        if($3 != NULL)
+            $$->v_expressionNode = *$3;
+        t = $$;
+    }
 ;
 
 ExpressionList:
-    Epsilon
+    Epsilon {
+        $$ = NULL;
+    }
     |
-    Expressions
+    Expressions {
+        $$ = $1;
+    }
 ;
 
 Expressions:
-    Expression
+    Expression {
+        $$ = new std::vector<ExpressionNode*>;
+        $$->emplace_back($1);
+    }
     |
-    Expressions COMMA Expression
+    Expressions COMMA Expression {
+        $1->emplace_back($3);
+        $$ = $1;
+    }
 ;
 
 StatementList:
@@ -472,13 +496,36 @@ Statements:
 Expression:
     L_PARENTHESIS Expression R_PARENTHESIS
     |
-    MINUS Expression %prec UNARY_MINUS
+    MINUS Expression %prec UNARY_MINUS {
+        UnaryOperatorNode* unode = new UnaryOperatorNode(@1.first_line, @1.first_column);
+        unode->op = "neg";
+        unode->operand = $2;
+        $$ = unode;
+    }
     |
-    Expression MULTIPLY Expression
+    Expression MULTIPLY Expression {
+        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        bnode->op = "*";
+        bnode->leftOperand = $1;
+        bnode->rightOperand = $3;
+        $$ = bnode;
+    }
     |
-    Expression DIVIDE Expression
+    Expression DIVIDE Expression {
+        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        bnode->op = "/";
+        bnode->leftOperand = $1;
+        bnode->rightOperand = $3;
+        $$ = bnode;
+    }
     |
-    Expression MOD Expression
+    Expression MOD Expression {
+        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        bnode->op = "mod";
+        bnode->leftOperand = $1;
+        bnode->rightOperand = $3;
+        $$ = bnode;
+    }
     |
     Expression PLUS Expression {
         BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
@@ -486,34 +533,94 @@ Expression:
         bnode->leftOperand = $1;
         bnode->rightOperand = $3;
         $$ = bnode;
-        t = bnode;
     }
     |
-    Expression MINUS Expression
+    Expression MINUS Expression {
+        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        bnode->op = "-";
+        bnode->leftOperand = $1;
+        bnode->rightOperand = $3;
+        $$ = bnode;
+    }
     |
-    Expression LESS Expression
+    Expression LESS Expression {
+        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        bnode->op = "<";
+        bnode->leftOperand = $1;
+        bnode->rightOperand = $3;
+        $$ = bnode;
+    }
     |
-    Expression LESS_OR_EQUAL Expression
+    Expression LESS_OR_EQUAL Expression {
+        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        bnode->op = "+";
+        bnode->leftOperand = $1;
+        bnode->rightOperand = $3;
+        $$ = bnode;
+    }
     |
-    Expression GREATER Expression
+    Expression GREATER Expression {
+        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        bnode->op = "<=";
+        bnode->leftOperand = $1;
+        bnode->rightOperand = $3;
+        $$ = bnode;
+    }
     |
-    Expression GREATER_OR_EQUAL Expression
+    Expression GREATER_OR_EQUAL Expression {
+        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        bnode->op = ">=";
+        bnode->leftOperand = $1;
+        bnode->rightOperand = $3;
+        $$ = bnode;
+    }
     |
-    Expression EQUAL Expression
+    Expression EQUAL Expression {
+        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        bnode->op = "=";
+        bnode->leftOperand = $1;
+        bnode->rightOperand = $3;
+        $$ = bnode;
+    }
     |
-    Expression NOT_EQUAL Expression
+    Expression NOT_EQUAL Expression {
+        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        bnode->op = "!=";
+        bnode->leftOperand = $1;
+        bnode->rightOperand = $3;
+        $$ = bnode;
+    }
     |
-    NOT Expression
+    NOT Expression {
+        UnaryOperatorNode* unode = new UnaryOperatorNode(@1.first_line, @1.first_column);
+        unode->op = "not";
+        unode->operand = $2;
+        $$ = unode;
+    }
     |
-    Expression AND Expression
+    Expression AND Expression {
+        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        bnode->op = "and";
+        bnode->leftOperand = $1;
+        bnode->rightOperand = $3;
+        $$ = bnode;
+    }
     |
-    Expression OR Expression
+    Expression OR Expression {
+        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        bnode->op = "or";
+        bnode->leftOperand = $1;
+        bnode->rightOperand = $3;
+        $$ = bnode;
+    }
     |
     LiteralConstant {
         $$ = $1;
     }
     |
-    VariableReference
+    VariableReference {
+        $$ = $1;
+    }
     |
     FunctionCall
 ;

@@ -19,11 +19,12 @@ begin
     b := false;
     c := "Compiler Design";
     d[qq][5] := 10.09;
-    a := b + c;
+    a := not b[8];
 end
 end assign
 
 begin
+    call(20, 30);
 end
 
 end decl

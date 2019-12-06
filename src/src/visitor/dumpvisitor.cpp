@@ -39,3 +39,13 @@ void DumpVisitor::visit(BinaryOperatorNode *e)
 {
     e->printNode();
 }
+
+void DumpVisitor::visit(UnaryOperatorNode *e)
+{
+    e->printNode();
+}
+
+void DumpVisitor::visit(FunctionCallExprNode *e)
+{
+    e->printNode();
+}

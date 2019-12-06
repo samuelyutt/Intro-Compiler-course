@@ -12,4 +12,6 @@ public:
     void visit(ExpressionNode *e) override;
     void visit(VariableReferenceNode *e) override;
     void visit(BinaryOperatorNode *e) override;
+    void visit(UnaryOperatorNode *e) override;;
+    void visit(FunctionCallExprNode *e) override;
 };

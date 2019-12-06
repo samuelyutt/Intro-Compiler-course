@@ -8,6 +8,8 @@
 #include "AST/expression.hpp"
 #include "AST/variablereference.hpp"
 #include "AST/binaryoperator.hpp"
+#include "AST/unaryoperator.hpp"
+#include "AST/functioncallexpr.hpp"
 
 class ASTNodeVisitorBase
 {
@@ -20,4 +22,6 @@ public:
     virtual void visit(ExpressionNode *e) = 0;
     virtual void visit(VariableReferenceNode *e) = 0;
     virtual void visit(BinaryOperatorNode *e) = 0;
+    virtual void visit(UnaryOperatorNode *e) = 0;
+    virtual void visit(FunctionCallExprNode *e) = 0;
 };
