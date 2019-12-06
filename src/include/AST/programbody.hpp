@@ -2,19 +2,17 @@
 #include <string>
 #include <vector>
 #include "AST/ast.hpp"
-#include "AST/programbody.hpp"
 #include "AST/declaration.hpp"
 
 class ASTNodeVisitorBase;
 
-class ProgramNode : public ASTNodeBase
+class ProgramBodyNode : public ASTNodeBase
 {
 public:
-  std::string name;
-  ProgramBodyNode* programBodyNode;
+  std::vector<DeclarationNode*> v_declarationNode;
 
-  ProgramNode(uint32_t line, uint32_t col);
+  ProgramBodyNode(uint32_t line, uint32_t col);
   void printNode();
-  ~ProgramNode();
+  ~ProgramBodyNode();
   void accept(ASTNodeVisitorBase &v);
 };

@@ -6,7 +6,7 @@ struct Location
 {
   uint32_t line;
   uint32_t col;
-  Location(uint32_t line, uint32_t col) : line(col), col(col){};
+  Location(uint32_t line, uint32_t col) : line(line), col(col){};
 };
 
 class ASTNodeBase

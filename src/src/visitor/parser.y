@@ -53,7 +53,7 @@ extern "C" int yyparse();
 static void yyerror(const char *msg);
 
 static ProgramNode *root;
-static BinaryOperatorNode *t;
+static VariableReferenceNode *t;
 //static ConstantValueNode *t2;
 
 //std::vector<VariableNode*>      v_variable_node;
@@ -386,12 +386,14 @@ VariableReference:
     ID {
         $$ = new VariableReferenceNode(@1.first_line, @1.first_column);
         $$->name.assign($1);
+        t = $$;
     }
     |
     ID ArrForm {
         $$ = new VariableReferenceNode(@1.first_line, @1.first_column);
         $$->name.assign($1);
         $$->v_expressionNode = *$2;
+        t = $$;
     }
 ;
 
@@ -480,14 +482,7 @@ Expression:
     |
     Expression MOD Expression
     |
-    Expression PLUS Expression {
-        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        bnode->op = "+";
-        bnode->leftOperand = $1;
-        bnode->rightOperand = $3;
-        $$ = bnode;
-        t = bnode;
-    }
+    Expression PLUS Expression
     |
     Expression MINUS Expression
     |
@@ -540,7 +535,7 @@ void yyerror(const char *msg) {
 }
 
 int main(int argc, const char *argv[]) {
-    CHECK(argc >= 2, "Usage: ./parser <filename>\n");
+    CHECK(argc == 2, "Usage: ./parser <filename>\n");
 
     FILE *fp = fopen(argv[1], "r");
 

@@ -37,68 +37,69 @@ float {integer}\.(0|[0-9]*[1-9])
 
 %%
     /* Delimiter */
-"," { TOKEN_CHAR(','); return COMMA; }
-";" { TOKEN_CHAR(';'); return SEMICOLON; }
-":" { TOKEN_CHAR(':'); return COLON; }
-"(" { TOKEN_CHAR('('); return L_PARENTHESIS; }
-")" { TOKEN_CHAR(')'); return R_PARENTHESIS; }
-"[" { TOKEN_CHAR('['); return L_BRACKET; }
-"]" { TOKEN_CHAR(']'); return R_BRACKET; }
+"," { TOKEN_CHAR(','); yylval.str=strdup(yytext); return COMMA; }
+";" { TOKEN_CHAR(';'); yylval.str=strdup(yytext); return SEMICOLON; }
+":" { TOKEN_CHAR(':'); yylval.str=strdup(yytext); return COLON; }
+"(" { TOKEN_CHAR('('); yylval.str=strdup(yytext); return L_PARENTHESIS; }
+")" { TOKEN_CHAR(')'); yylval.str=strdup(yytext); return R_PARENTHESIS; }
+"[" { TOKEN_CHAR('['); yylval.str=strdup(yytext); return L_BRACKET; }
+"]" { TOKEN_CHAR(']'); yylval.str=strdup(yytext); return R_BRACKET; }
 
     /* Operator */
-"+"   { TOKEN_CHAR('+'); return PLUS; }
-"-"   { TOKEN_CHAR('-'); return MINUS; }
-"*"   { TOKEN_CHAR('*'); return MULTIPLY; }
-"/"   { TOKEN_CHAR('/'); return DIVIDE; }
-"mod" { TOKEN(mod);      return MOD; }
-":="  { TOKEN(:=);       return ASSIGN; }
-"<"   { TOKEN_CHAR('<'); return LESS; }
-"<="  { TOKEN(<=);       return LESS_OR_EQUAL; }
-"<>"  { TOKEN(<>);       return NOT_EQUAL; }
-">="  { TOKEN(>=);       return GREATER_OR_EQUAL; }
-">"   { TOKEN_CHAR('>'); return GREATER; }
-"="   { TOKEN_CHAR('='); return EQUAL; }
-"and" { TOKEN(and);      return AND; }
-"or"  { TOKEN(or);       return OR; }
-"not" { TOKEN(not);      return NOT; }
+"+"   { TOKEN_CHAR('+'); yylval.str=strdup(yytext); return PLUS; }
+"-"   { TOKEN_CHAR('-'); yylval.str=strdup(yytext); return MINUS; }
+"*"   { TOKEN_CHAR('*'); yylval.str=strdup(yytext); return MULTIPLY; }
+"/"   { TOKEN_CHAR('/'); yylval.str=strdup(yytext); return DIVIDE; }
+"mod" { TOKEN(mod);      yylval.str=strdup(yytext); return MOD; }
+":="  { TOKEN(:=);       yylval.str=strdup(yytext); return ASSIGN; }
+"<"   { TOKEN_CHAR('<'); yylval.str=strdup(yytext); return LESS; }
+"<="  { TOKEN(<=);       yylval.str=strdup(yytext); return LESS_OR_EQUAL; }
+"<>"  { TOKEN(<>);       yylval.str=strdup(yytext); return NOT_EQUAL; }
+">="  { TOKEN(>=);       yylval.str=strdup(yytext); return GREATER_OR_EQUAL; }
+">"   { TOKEN_CHAR('>'); yylval.str=strdup(yytext); return GREATER; }
+"="   { TOKEN_CHAR('='); yylval.str=strdup(yytext); return EQUAL; }
+"and" { TOKEN(and);      yylval.str=strdup(yytext); return AND; }
+"or"  { TOKEN(or);       yylval.str=strdup(yytext); return OR; }
+"not" { TOKEN(not);      yylval.str=strdup(yytext); return NOT; }
 
     /* Keyword */
-"array"   { TOKEN(KWarray);   return ARRAY; }
-"begin"   { TOKEN(KWbegin);   return BEGIN_; }
-"boolean" { TOKEN(KWboolean); return BOOLEAN; }
-"def"     { TOKEN(KWdef);     return DEF; }
-"do"      { TOKEN(KWdo);      return DO; }
-"else"    { TOKEN(KWelse);    return ELSE; }
-"end"     { TOKEN(KWend);     return END; }
-"false"   { TOKEN(KWfalse);   return FALSE; }
-"for"     { TOKEN(KWfor);     return FOR; }
-"integer" { TOKEN(KWinteger); return INTEGER; }
-"if"      { TOKEN(KWif);      return IF; }
-"of"      { TOKEN(KWof);      return OF; }
-"print"   { TOKEN(KWprint);   return PRINT; }
-"read"    { TOKEN(KWread);    return READ; }
-"real"    { TOKEN(KWreal);    return REAL; }
-"string"  { TOKEN(KWstring);  return STRING; }
-"then"    { TOKEN(KWthen);    return THEN; }
-"to"      { TOKEN(KWto);      return TO; }
-"true"    { TOKEN(KWtrue);    return TRUE; }
-"return"  { TOKEN(KWreturn);  return RETURN; }
-"var"     { TOKEN(KWvar);     return VAR; }
-"while"   { TOKEN(KWwhile);   return WHILE; }
+"array"   { TOKEN(KWarray);   yylval.str=strdup(yytext); return ARRAY; }
+"begin"   { TOKEN(KWbegin);   yylval.str=strdup(yytext); return BEGIN_; }
+"boolean" { TOKEN(KWboolean); yylval.str=strdup(yytext); return BOOLEAN; }
+"def"     { TOKEN(KWdef);     yylval.str=strdup(yytext); return DEF; }
+"do"      { TOKEN(KWdo);      yylval.str=strdup(yytext); return DO; }
+"else"    { TOKEN(KWelse);    yylval.str=strdup(yytext); return ELSE; }
+"end"     { TOKEN(KWend);     yylval.str=strdup(yytext); return END; }
+"false"   { TOKEN(KWfalse);   yylval.str=strdup(yytext); return FALSE; }
+"for"     { TOKEN(KWfor);     yylval.str=strdup(yytext); return FOR; }
+"integer" { TOKEN(KWinteger); yylval.str=strdup(yytext); return INTEGER; }
+"if"      { TOKEN(KWif);      yylval.str=strdup(yytext); return IF; }
+"of"      { TOKEN(KWof);      yylval.str=strdup(yytext); return OF; }
+"print"   { TOKEN(KWprint);   yylval.str=strdup(yytext); return PRINT; }
+"read"    { TOKEN(KWread);    yylval.str=strdup(yytext); return READ; }
+"real"    { TOKEN(KWreal);    yylval.str=strdup(yytext); return REAL; }
+"string"  { TOKEN(KWstring);  yylval.str=strdup(yytext); return STRING; }
+"then"    { TOKEN(KWthen);    yylval.str=strdup(yytext); return THEN; }
+"to"      { TOKEN(KWto);      yylval.str=strdup(yytext); return TO; }
+"true"    { TOKEN(KWtrue);    yylval.str=strdup(yytext); return TRUE; }
+"return"  { TOKEN(KWreturn);  yylval.str=strdup(yytext); return RETURN; }
+"var"     { TOKEN(KWvar);     yylval.str=strdup(yytext); return VAR; }
+"while"   { TOKEN(KWwhile);   yylval.str=strdup(yytext); return WHILE; }
 
     /* Identifier */
 [a-zA-Z][a-zA-Z0-9]* { TOKEN_STRING(id, yytext); yylval.str=strdup(yytext); return ID; }
 
     /* Integer (decimal/octal) */
-{integer} { TOKEN_STRING(integer, yytext);     return INT_LITERAL; }
-0[0-7]+   { TOKEN_STRING(oct_integer, yytext); return INT_LITERAL; }
+{integer} { TOKEN_STRING(integer, yytext);     yylval.str=strdup(yytext); return INT_LITERAL; }
+0[0-7]+   { TOKEN_STRING(oct_integer, yytext); yylval.str=strdup(yytext); return INT_LITERAL; }
 
     /* Floating-Point */
-{float} { TOKEN_STRING(float, yytext); return REAL_LITERAL; }
+{float} { TOKEN_STRING(float, yytext); yylval.str=strdup(yytext); return REAL_LITERAL; }
 
     /* Scientific Notation [Ee][+-]?[0-9]+ */
 ({integer}|{float})[Ee][+-]?({integer}) {
     TOKEN_STRING(scientific, yytext);
+    yylval.str=strdup(yytext);
     return REAL_LITERAL;
 }
 
@@ -121,6 +122,7 @@ float {integer}\.(0|[0-9]*[1-9])
     }
     *StrPtr = '\0';
     TOKEN_STRING(string, StringLiteral);
+    yylval.str=strdup(yytext);
     return STRING_LITERAL;
 }
     /* Whitespace */
