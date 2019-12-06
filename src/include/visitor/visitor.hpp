@@ -10,6 +10,10 @@
 #include "AST/binaryoperator.hpp"
 #include "AST/unaryoperator.hpp"
 #include "AST/functioncallexpr.hpp"
+#include "AST/statement.hpp"
+#include "AST/compoundstmt.hpp"
+#include "AST/arrtype.hpp"
+#include "AST/arrdeclaration.hpp"
 
 class ASTNodeVisitorBase
 {
@@ -24,4 +28,8 @@ public:
     virtual void visit(BinaryOperatorNode *e) = 0;
     virtual void visit(UnaryOperatorNode *e) = 0;
     virtual void visit(FunctionCallExprNode *e) = 0;
+    virtual void visit(StatementNode *e) = 0;
+    virtual void visit(CompoundStmtNode *e) = 0;
+    virtual void visit(ArrTypeNode *e) = 0;
+    virtual void visit(ArrDeclarationNode *e) = 0;
 };

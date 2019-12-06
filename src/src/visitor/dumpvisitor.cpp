@@ -49,3 +49,23 @@ void DumpVisitor::visit(FunctionCallExprNode *e)
 {
     e->printNode();
 }
+
+void DumpVisitor::visit(StatementNode *e)
+{
+    e->printNode();
+}
+
+void DumpVisitor::visit(CompoundStmtNode *e)
+{
+    e->printNode();
+}
+
+void DumpVisitor::visit(ArrTypeNode *e)
+{
+    e->printNode();
+}
+
+void DumpVisitor::visit(ArrDeclarationNode *e)
+{
+    e->printNode();
+}

@@ -10,7 +10,11 @@ VariableNode::VariableNode(uint32_t line, uint32_t col): ASTNodeBase(line,col){
 void VariableNode::printNode(){
     DumpVisitor dvisitor;
 	cout << "variable <line: " << location.line << ", col: " << location.col << "> " << 
-	name << " " << type << endl;
+	name << " " << type;
+	if (arrTypeNode != NULL) {
+	    arrTypeNode->accept(dvisitor);
+	}
+	cout << endl;
 	if (constantValueNode != NULL) {
 	    constantValueNode->accept(dvisitor);
 	}

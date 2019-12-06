@@ -8,6 +8,7 @@ var b1 : boolean;
 var c1 : real;
 var d1 : string;
 var b1 : 10;
+var d: array 1 to 2 of array 1 to 10 of real;
 
 assign();
 begin
@@ -24,7 +25,10 @@ end
 end assign
 
 begin
-    call(20, 30);
+    var a: integer;
+    var b: boolean;
+    begin
+    end
 end
 
 end decl

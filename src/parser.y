@@ -11,19 +11,12 @@
 #include "include/AST/binaryoperator.hpp"
 #include "include/AST/unaryoperator.hpp"
 #include "include/AST/functioncallexpr.hpp"
-/*#include "include/AST/compoundstatement.hpp"
-#include "include/AST/read.hpp"
-#include "include/AST/return.hpp"
-#include "include/AST/unaryoperator.hpp"
-#include "include/AST/variable.hpp"
-#include "include/AST/variablereference.hpp"
-#include "include/AST/while.hpp"
-#include "include/AST/for.hpp"
-#include "include/AST/function.hpp"
-#include "include/AST/if.hpp"
-#include "include/AST/functioncall.hpp"
-#include "include/AST/print.hpp"
-#include "include/AST/assignment.hpp"*/
+#include "include/AST/compoundstmt.hpp"
+#include "include/AST/statement.hpp"
+#include "include/AST/arrtype.hpp"
+#include "include/AST/arrdeclaration.hpp"
+
+
 #include "include/core/error.h"
 #include "include/visitor/dumpvisitor.hpp"
 
@@ -55,7 +48,7 @@ extern "C" int yyparse();
 static void yyerror(const char *msg);
 
 static ProgramNode *root;
-static FunctionCallExprNode *t;
+static CompoundStmtNode *t;
 //static ConstantValueNode *t2;
 
 //std::vector<VariableNode*>      v_variable_node;
@@ -73,6 +66,10 @@ static FunctionCallExprNode *t;
     #include "AST/binaryoperator.hpp"
     #include "AST/unaryoperator.hpp"
     #include "AST/functioncallexpr.hpp"
+    #include "AST/compoundstmt.hpp"
+    #include "AST/statement.hpp"
+    #include "AST/arrtype.hpp"
+    #include "AST/arrdeclaration.hpp"
     //#include "AST/.hpp"
 }
 
@@ -117,10 +114,15 @@ static FunctionCallExprNode *t;
     VariableNode*           variable_node;
     VariableReferenceNode*  variablereference_node;
     FunctionCallExprNode*   functioncallexpr_node;
+    StatementNode*          statement_node;
+    CompoundStmtNode*       compoundstmt_node;
+    ArrTypeNode*            arrtype_node;
 
     std::vector<DeclarationNode*>*      v_declaration_node;
     std::vector<VariableNode*>*         v_variable_node;
     std::vector<ExpressionNode*>*       v_expression_node;
+    std::vector<StatementNode*>*        v_statement_node;
+    std::vector<ArrDeclarationNode*>*   v_arrdecl_node;
 }
 
 %type<program_node>             Program
@@ -136,6 +138,12 @@ static FunctionCallExprNode *t;
 %type<v_expression_node>        ExpressionList
 %type<variablereference_node>   VariableReference
 %type<functioncallexpr_node>    FunctionCall
+%type<statement_node>           Statement
+%type<v_statement_node>         Statements
+%type<v_statement_node>         StatementList
+%type<compoundstmt_node>        CompoundStatement
+%type<v_arrdecl_node>           ArrDecl
+%type<arrtype_node>             ArrType
 
 %type<str>                  ProgramName
 %type<str>                  INT_LITERAL
@@ -144,7 +152,7 @@ static FunctionCallExprNode *t;
 %type<str>                  TRUE
 %type<str>                  FALSE
 %type<str>                  ID
-%type<str>                  Type
+%type<str>                  ScalarType
     
 
 
@@ -168,7 +176,7 @@ ProgramName:
 ProgramBody:
     DeclarationList FunctionList CompoundStatement {
         $$ = new ProgramBodyNode(@1.first_line, @1.first_column);
-        $$->v_declarationNode = *$1;
+        if($1 != NULL) $$->v_declarationNode = *$1;
     }
 ;
 
@@ -259,7 +267,17 @@ ReturnType:
                                    */
 
 Declaration:
-    VAR IdList COLON Type SEMICOLON {
+    VAR IdList COLON ArrType SEMICOLON {
+        for (auto variableNode: *$2) {
+            variableNode->type = $4->type;
+            variableNode->constantValueNode = NULL;
+            variableNode->arrTypeNode = $4;
+        }
+        $$ = new DeclarationNode(@1.first_line, @1.first_column);
+        $$->v_variableNode = *$2;
+    }
+    |
+    VAR IdList COLON ScalarType SEMICOLON {
         for (auto variableNode: *$2) {
             variableNode->type = $4;
             variableNode->constantValueNode = NULL;
@@ -314,13 +332,29 @@ ScalarType:
 ;
 
 ArrType:
-    ArrDecl ScalarType
+    ArrDecl ScalarType {
+        $$ = new ArrTypeNode(@1.first_line, @1.first_column);
+        $$->type.assign($2);
+        $$->v_arrdeclarationNode = *$1;
+    }
 ;
 
 ArrDecl:
-    ARRAY INT_LITERAL TO INT_LITERAL OF
+    ARRAY INT_LITERAL TO INT_LITERAL OF {
+        ArrDeclarationNode* anode = new ArrDeclarationNode(@1.first_line, @1.first_column);
+        anode->bgn.assign($2);
+        anode->end.assign($4);
+        $$ = new std::vector<ArrDeclarationNode*>;
+        $$->emplace_back(anode);
+    }
     |
-    ArrDecl ARRAY INT_LITERAL TO INT_LITERAL OF
+    ArrDecl ARRAY INT_LITERAL TO INT_LITERAL OF {
+        ArrDeclarationNode* anode = new ArrDeclarationNode(@1.first_line, @1.first_column);
+        anode->bgn.assign($3);
+        anode->end.assign($5);
+        $1->emplace_back(anode);
+        $$ = $1;
+    }
 ;
 
 LiteralConstant:
@@ -360,7 +394,9 @@ LiteralConstant:
                   */
 
 Statement:
-    CompoundStatement
+    CompoundStatement {
+        $$ = $1;
+    }
     |
     Simple
     |
@@ -379,7 +415,13 @@ CompoundStatement:
     BEGIN_
     DeclarationList
     StatementList
-    END
+    END {
+        CompoundStmtNode* cnode = new CompoundStmtNode(@1.first_line, @1.first_column);
+        if($2 != NULL) cnode->v_declarationNode = *$2;
+        if($3 != NULL) cnode->v_statementNode = *$3;
+        $$ = cnode;
+        t = cnode;
+    }
 ;
 
 Simple:
@@ -453,9 +495,7 @@ FunctionCall:
     ID L_PARENTHESIS ExpressionList R_PARENTHESIS {
         $$ = new FunctionCallExprNode(@1.first_line, @1.first_column);
         $$->name.assign($1);
-        if($3 != NULL)
-            $$->v_expressionNode = *$3;
-        t = $$;
+        if($3 != NULL) $$->v_expressionNode = *$3;
     }
 ;
 
@@ -482,15 +522,25 @@ Expressions:
 ;
 
 StatementList:
-    Epsilon
+    Epsilon {
+        $$ = NULL;
+    }
     |
-    Statements
+    Statements {
+        $$ = $1;
+    }
 ;
 
 Statements:
-    Statement
+    Statement {
+        $$ = new std::vector<StatementNode*>;
+        $$->emplace_back($1);
+    }
     |
-    Statements Statement
+    Statements Statement{
+        $1->emplace_back($2);
+        $$ = $1;
+    }
 ;
 
 Expression:
