@@ -15,6 +15,6 @@ end call
 
 begin
   call(20, 30);
-  call();
+  call(call(20, 30));
 end
 end invocation

@@ -109,3 +109,8 @@ void DumpVisitor::visit(FunctionNode *e)
 {
     e->printNode();
 }
+
+void DumpVisitor::visit(FunctionInvokationNode *e)
+{
+    e->printNode();
+}

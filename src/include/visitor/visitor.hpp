@@ -22,6 +22,7 @@
 #include "AST/if.hpp"
 #include "AST/for.hpp"
 #include "AST/function.hpp"
+#include "AST/functioninvokation.hpp"
 
 class ASTNodeVisitorBase
 {
@@ -48,4 +49,5 @@ public:
     virtual void visit(IfNode *e) = 0;
     virtual void visit(ForNode *e) = 0;
     virtual void visit(FunctionNode *e) = 0;
+    virtual void visit(FunctionInvokationNode *e) = 0;
 };

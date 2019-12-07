@@ -22,6 +22,7 @@
 #include "include/AST/while.hpp"
 #include "include/AST/if.hpp"
 #include "include/AST/for.hpp"
+#include "include/AST/functioninvokation.hpp"
 
 
 #include "include/core/error.h"
@@ -84,6 +85,7 @@ static AssignmentNode *t;
     #include "AST/while.hpp"
     #include "AST/if.hpp"
     #include "AST/for.hpp"
+    #include "AST/functioninvokation.hpp"
     //#include "AST/.hpp"
 }
 
@@ -649,7 +651,12 @@ Return:
 ;
 
 FunctionInvokation:
-    FunctionCall SEMICOLON
+    FunctionCall SEMICOLON {
+        FunctionInvokationNode* node = new FunctionInvokationNode(@1.first_line, @1.first_column);
+        node->name = $1->name;
+        node->v_expressionNode = $1->v_expressionNode;
+        $$ = node;
+    }
 ;
 
 FunctionCall:
@@ -835,7 +842,9 @@ Expression:
         $$ = $1;
     }
     |
-    FunctionCall
+    FunctionCall {
+        $$ = $1;
+    }
 ;
 
     /*

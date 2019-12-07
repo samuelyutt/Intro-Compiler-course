@@ -26,4 +26,5 @@ public:
     void visit(IfNode *e) override;
     void visit(ForNode *e) override;
     void visit(FunctionNode *e) override;
+    void visit(FunctionInvokationNode *e) override;
 };
