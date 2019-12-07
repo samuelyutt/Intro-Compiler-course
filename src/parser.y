@@ -440,13 +440,16 @@ ArrDecl:
 LiteralConstant:
     INT_LITERAL {
         $$ = new ConstantValueNode(@1.first_line, @1.first_column);
-        $$->constant_value.assign($1);
+        if ($1[0] == '0')
+            $$->constant_value.assign( std::to_string(std::stoi($1, 0, 8)) );
+        else
+            $$->constant_value.assign( std::to_string(std::stoi($1)) );
         $$->type = "integer";
     }
     |
     REAL_LITERAL {
         $$ = new ConstantValueNode(@1.first_line, @1.first_column);
-        $$->constant_value.assign($1);
+        $$->constant_value.assign( std::to_string(std::stof($1)) );
         $$->type = "real";
     }
     |
