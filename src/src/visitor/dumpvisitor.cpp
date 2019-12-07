@@ -94,3 +94,8 @@ void DumpVisitor::visit(WhileNode *e)
 {
     e->printNode();
 }
+
+void DumpVisitor::visit(IfNode *e)
+{
+    e->printNode();
+}

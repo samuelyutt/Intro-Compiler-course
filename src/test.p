@@ -8,20 +8,20 @@ begin
   var counter: integer;
   
   // if
-  // if (1 > 0) then
-  //   print true;
-  // else
-  //   print false;
-  // end if
+  if (1 > 0) then
+    print true;
+  else
+    print false;
+  end if
 
-  // if debug = true then
-  //   print "[LOG]\n";
-  // end if
+  if debug = true then
+    print "[LOG]\n";
+  end if
 
   // while
   counter := 0;
   while counter < 10 do
-    print "Taiwan No.1\n";
+    //print "Taiwan No.1\n";
   end do
 
   // for

@@ -23,4 +23,5 @@ public:
     void visit(ReadNode *e) override;
     void visit(ReturnNode *e) override;
     void visit(WhileNode *e) override;
+    void visit(IfNode *e) override;
 };

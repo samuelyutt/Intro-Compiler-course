@@ -20,6 +20,7 @@
 #include "include/AST/read.hpp"
 #include "include/AST/return.hpp"
 #include "include/AST/while.hpp"
+#include "include/AST/if.hpp"
 
 
 #include "include/core/error.h"
@@ -80,6 +81,7 @@ static AssignmentNode *t;
     #include "AST/read.hpp"
     #include "AST/return.hpp"
     #include "AST/while.hpp"
+    #include "AST/if.hpp"
     //#include "AST/.hpp"
 }
 
@@ -157,6 +159,7 @@ static AssignmentNode *t;
 %type<statement_node>           FunctionInvokation
 %type<v_statement_node>         Statements
 %type<v_statement_node>         StatementList
+%type<v_statement_node>         ElseOrNot
 %type<compoundstmt_node>        CompoundStatement
 %type<v_arrdecl_node>           ArrDecl
 %type<arrtype_node>             ArrType
@@ -358,18 +361,18 @@ ArrType:
 
 ArrDecl:
     ARRAY INT_LITERAL TO INT_LITERAL OF {
-        ArrDeclarationNode* anode = new ArrDeclarationNode(@1.first_line, @1.first_column);
-        anode->bgn.assign($2);
-        anode->end.assign($4);
+        ArrDeclarationNode* node = new ArrDeclarationNode(@1.first_line, @1.first_column);
+        node->bgn.assign($2);
+        node->end.assign($4);
         $$ = new std::vector<ArrDeclarationNode*>;
-        $$->emplace_back(anode);
+        $$->emplace_back(node);
     }
     |
     ArrDecl ARRAY INT_LITERAL TO INT_LITERAL OF {
-        ArrDeclarationNode* anode = new ArrDeclarationNode(@1.first_line, @1.first_column);
-        anode->bgn.assign($3);
-        anode->end.assign($5);
-        $1->emplace_back(anode);
+        ArrDeclarationNode* node = new ArrDeclarationNode(@1.first_line, @1.first_column);
+        node->bgn.assign($3);
+        node->end.assign($5);
+        $1->emplace_back(node);
         $$ = $1;
     }
 ;
@@ -445,31 +448,31 @@ CompoundStatement:
     DeclarationList
     StatementList
     END {
-        CompoundStmtNode* cnode = new CompoundStmtNode(@1.first_line, @1.first_column);
-        if($2 != NULL) cnode->v_declarationNode = *$2;
-        if($3 != NULL) cnode->v_statementNode = *$3;
-        $$ = cnode;
+        CompoundStmtNode* node = new CompoundStmtNode(@1.first_line, @1.first_column);
+        if($2 != NULL) node->v_declarationNode = *$2;
+        if($3 != NULL) node->v_statementNode = *$3;
+        $$ = node;
     }
 ;
 
 Simple:
     VariableReference ASSIGN Expression SEMICOLON {
-        AssignmentNode* anode = new AssignmentNode(@1.first_line, @1.first_column);
-        anode->lvalue = $1;
-        anode->expression = $3;
-        $$ = anode;
+        AssignmentNode* node = new AssignmentNode(@1.first_line, @1.first_column);
+        node->lvalue = $1;
+        node->expression = $3;
+        $$ = node;
     }
     |
     PRINT Expression SEMICOLON {
-        PrintNode* pnode = new PrintNode(@1.first_line, @1.first_column);
-        pnode->target = $2;
-        $$ = pnode;
+        PrintNode* node = new PrintNode(@1.first_line, @1.first_column);
+        node->target = $2;
+        $$ = node;
     }
     |
     READ VariableReference SEMICOLON {
-        ReadNode* rnode = new ReadNode(@1.first_line, @1.first_column);
-        rnode->target = $2;
-        $$ = rnode;
+        ReadNode* node = new ReadNode(@1.first_line, @1.first_column);
+        node->target = $2;
+        $$ = node;
     }
 ;
 
@@ -502,24 +505,34 @@ Condition:
     IF Expression THEN
     StatementList
     ElseOrNot
-    END IF
+    END IF {
+        IfNode* node = new IfNode(@1.first_line, @1.first_column);
+        node->condition = $2;
+        if($4 != NULL) node->body = *$4;
+        if($5 != NULL) node->body_of_else = *$5;
+        $$ = node;
+    }
 ;
 
 ElseOrNot:
     ELSE
-    StatementList
+    StatementList {
+        $$ = $2;
+    }
     |
-    Epsilon
+    Epsilon {
+        $$ = NULL;
+    }
 ;
 
 While:
     WHILE Expression DO
     StatementList
     END DO {
-        WhileNode* wnode = new WhileNode(@1.first_line, @1.first_column);
-        wnode->condition = $2;
-        wnode->body = *$4;
-        $$ = wnode;
+        WhileNode* node = new WhileNode(@1.first_line, @1.first_column);
+        node->condition = $2;
+        if($4 != NULL) node->body = *$4;
+        $$ = node;
     }
 ;
 
@@ -531,9 +544,9 @@ For:
 
 Return:
     RETURN Expression SEMICOLON {
-        ReturnNode* rnode = new ReturnNode(@1.first_line, @1.first_column);
-        rnode->return_value = $2;
-        $$ = rnode;
+        ReturnNode* node = new ReturnNode(@1.first_line, @1.first_column);
+        node->return_value = $2;
+        $$ = node;
     }
 ;
 
@@ -594,124 +607,126 @@ Statements:
 ;
 
 Expression:
-    L_PARENTHESIS Expression R_PARENTHESIS
+    L_PARENTHESIS Expression R_PARENTHESIS {
+        $$ = $2;
+    }
     |
     MINUS Expression %prec UNARY_MINUS {
-        UnaryOperatorNode* unode = new UnaryOperatorNode(@1.first_line, @1.first_column);
-        unode->op = "neg";
-        unode->operand = $2;
-        $$ = unode;
+        UnaryOperatorNode* node = new UnaryOperatorNode(@1.first_line, @1.first_column);
+        node->op = "neg";
+        node->operand = $2;
+        $$ = node;
     }
     |
     Expression MULTIPLY Expression {
-        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        bnode->op = "*";
-        bnode->leftOperand = $1;
-        bnode->rightOperand = $3;
-        $$ = bnode;
+        BinaryOperatorNode* node = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        node->op = "*";
+        node->leftOperand = $1;
+        node->rightOperand = $3;
+        $$ = node;
     }
     |
     Expression DIVIDE Expression {
-        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        bnode->op = "/";
-        bnode->leftOperand = $1;
-        bnode->rightOperand = $3;
-        $$ = bnode;
+        BinaryOperatorNode* node = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        node->op = "/";
+        node->leftOperand = $1;
+        node->rightOperand = $3;
+        $$ = node;
     }
     |
     Expression MOD Expression {
-        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        bnode->op = "mod";
-        bnode->leftOperand = $1;
-        bnode->rightOperand = $3;
-        $$ = bnode;
+        BinaryOperatorNode* node = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        node->op = "mod";
+        node->leftOperand = $1;
+        node->rightOperand = $3;
+        $$ = node;
     }
     |
     Expression PLUS Expression {
-        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        bnode->op = "+";
-        bnode->leftOperand = $1;
-        bnode->rightOperand = $3;
-        $$ = bnode;
+        BinaryOperatorNode* node = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        node->op = "+";
+        node->leftOperand = $1;
+        node->rightOperand = $3;
+        $$ = node;
     }
     |
     Expression MINUS Expression {
-        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        bnode->op = "-";
-        bnode->leftOperand = $1;
-        bnode->rightOperand = $3;
-        $$ = bnode;
+        BinaryOperatorNode* node = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        node->op = "-";
+        node->leftOperand = $1;
+        node->rightOperand = $3;
+        $$ = node;
     }
     |
     Expression LESS Expression {
-        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        bnode->op = "<";
-        bnode->leftOperand = $1;
-        bnode->rightOperand = $3;
-        $$ = bnode;
+        BinaryOperatorNode* node = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        node->op = "<";
+        node->leftOperand = $1;
+        node->rightOperand = $3;
+        $$ = node;
     }
     |
     Expression LESS_OR_EQUAL Expression {
-        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        bnode->op = "+";
-        bnode->leftOperand = $1;
-        bnode->rightOperand = $3;
-        $$ = bnode;
+        BinaryOperatorNode* node = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        node->op = "<=";
+        node->leftOperand = $1;
+        node->rightOperand = $3;
+        $$ = node;
     }
     |
     Expression GREATER Expression {
-        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        bnode->op = "<=";
-        bnode->leftOperand = $1;
-        bnode->rightOperand = $3;
-        $$ = bnode;
+        BinaryOperatorNode* node = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        node->op = ">";
+        node->leftOperand = $1;
+        node->rightOperand = $3;
+        $$ = node;
     }
     |
     Expression GREATER_OR_EQUAL Expression {
-        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        bnode->op = ">=";
-        bnode->leftOperand = $1;
-        bnode->rightOperand = $3;
-        $$ = bnode;
+        BinaryOperatorNode* node = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        node->op = ">=";
+        node->leftOperand = $1;
+        node->rightOperand = $3;
+        $$ = node;
     }
     |
     Expression EQUAL Expression {
-        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        bnode->op = "=";
-        bnode->leftOperand = $1;
-        bnode->rightOperand = $3;
-        $$ = bnode;
+        BinaryOperatorNode* node = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        node->op = "=";
+        node->leftOperand = $1;
+        node->rightOperand = $3;
+        $$ = node;
     }
     |
     Expression NOT_EQUAL Expression {
-        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        bnode->op = "!=";
-        bnode->leftOperand = $1;
-        bnode->rightOperand = $3;
-        $$ = bnode;
+        BinaryOperatorNode* node = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        node->op = "!=";
+        node->leftOperand = $1;
+        node->rightOperand = $3;
+        $$ = node;
     }
     |
     NOT Expression {
-        UnaryOperatorNode* unode = new UnaryOperatorNode(@1.first_line, @1.first_column);
-        unode->op = "not";
-        unode->operand = $2;
-        $$ = unode;
+        UnaryOperatorNode* node = new UnaryOperatorNode(@1.first_line, @1.first_column);
+        node->op = "not";
+        node->operand = $2;
+        $$ = node;
     }
     |
     Expression AND Expression {
-        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        bnode->op = "and";
-        bnode->leftOperand = $1;
-        bnode->rightOperand = $3;
-        $$ = bnode;
+        BinaryOperatorNode* node = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        node->op = "and";
+        node->leftOperand = $1;
+        node->rightOperand = $3;
+        $$ = node;
     }
     |
     Expression OR Expression {
-        BinaryOperatorNode* bnode = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        bnode->op = "or";
-        bnode->leftOperand = $1;
-        bnode->rightOperand = $3;
-        $$ = bnode;
+        BinaryOperatorNode* node = new BinaryOperatorNode(@2.first_line, @2.first_column);
+        node->op = "or";
+        node->leftOperand = $1;
+        node->rightOperand = $3;
+        $$ = node;
     }
     |
     LiteralConstant {
