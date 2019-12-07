@@ -541,43 +541,7 @@ While:
 For:
     FOR ID ASSIGN INT_LITERAL TO INT_LITERAL DO
     StatementList
-    END DO {
-        ConstantValueNode* bgnConstantValueNode = new ConstantValueNode(@4.first_line, @4.first_column);
-        bgnConstantValueNode->constant_value.assign($4);
-        bgnConstantValueNode->type = "integer";
-
-        ConstantValueNode* endConstantValueNode = new ConstantValueNode(@6.first_line, @6.first_column);
-        endConstantValueNode->constant_value.assign($6);
-        endConstantValueNode->type = "integer";
-
-        /*************************************/
-        
-        VariableNode* variableNode = new VariableNode(@2.first_line, @2.first_column);
-        variableNode->name.assign($2);
-        variableNode->type = "integer";
-        variableNode->constantValueNode = NULL;
-
-        DeclarationNode* declarationNode = new DeclarationNode(@2.first_line, @2.first_column);
-        declarationNode->v_variableNode.emplace_back(variableNode);
-
-        /*************************************/
-        
-        VariableReferenceNode* variableReferenceNode = new VariableReferenceNode(@2.first_line, @2.first_column);
-        variableReferenceNode->name.assign($2);
-
-        AssignmentNode* assignmentNode = new AssignmentNode(@3.first_line, @3.first_column);
-        assignmentNode->lvalue = variableReferenceNode;
-        assignmentNode->expression = bgnConstantValueNode;
-
-        /*************************************/
-
-        ForNode* node = new ForNode(@1.first_line, @1.first_column);
-        node->loop_var_decl = declarationNode;
-        node->init_assignment = assignmentNode;
-        node->condition = endConstantValueNode;
-        if($8 != NULL) node->body = *$8;
-        $$ = node;
-    }
+    END DO
 ;
 
 Return:

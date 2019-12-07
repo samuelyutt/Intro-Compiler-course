@@ -25,15 +25,15 @@ begin
   end do
 
   // for
-  // for idx := 0 to 10 do
-  //   begin
-  //     var idx: 10;
-  //     print "ISA (Ideology State Automaton)\n";
-  //   end
-  // end do
+  for idx := 0 to 10 do
+    begin
+      var idx: 10;
+      print "ISA (Ideology State Automaton)\n";
+    end
+  end do
 
-  // for idx := 0 to 10 do
-  // end do
+  for idx := 0 to 10 do
+  end do
 
   return 11;
 end
