@@ -69,3 +69,28 @@ void DumpVisitor::visit(ArrDeclarationNode *e)
 {
     e->printNode();
 }
+
+void DumpVisitor::visit(AssignmentNode *e)
+{
+    e->printNode();
+}
+
+void DumpVisitor::visit(PrintNode *e)
+{
+    e->printNode();
+}
+
+void DumpVisitor::visit(ReadNode *e)
+{
+    e->printNode();
+}
+
+void DumpVisitor::visit(ReturnNode *e)
+{
+    e->printNode();
+}
+
+void DumpVisitor::visit(WhileNode *e)
+{
+    e->printNode();
+}

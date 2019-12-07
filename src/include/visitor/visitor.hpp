@@ -14,6 +14,11 @@
 #include "AST/compoundstmt.hpp"
 #include "AST/arrtype.hpp"
 #include "AST/arrdeclaration.hpp"
+#include "AST/assignment.hpp"
+#include "AST/print.hpp"
+#include "AST/read.hpp"
+#include "AST/return.hpp"
+#include "AST/while.hpp"
 
 class ASTNodeVisitorBase
 {
@@ -32,4 +37,9 @@ public:
     virtual void visit(CompoundStmtNode *e) = 0;
     virtual void visit(ArrTypeNode *e) = 0;
     virtual void visit(ArrDeclarationNode *e) = 0;
+    virtual void visit(AssignmentNode *e) = 0;
+    virtual void visit(PrintNode *e) = 0;
+    virtual void visit(ReadNode *e) = 0;
+    virtual void visit(ReturnNode *e) = 0;
+    virtual void visit(WhileNode *e) = 0;
 };

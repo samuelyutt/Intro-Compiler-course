@@ -13,6 +13,12 @@ void ProgramBodyNode::printNode(){
 	for (auto declarationNode: v_declarationNode) {
     	declarationNode->accept(dvisitor);
     }
+    // for (auto declarationNode: v_declarationNode) {
+    // 	declarationNode->accept(dvisitor);
+    // }
+    if (compoundStmtNode != NULL) {
+	    compoundStmtNode->accept(dvisitor);
+	}
 }
 
 ProgramBodyNode::~ProgramBodyNode(){

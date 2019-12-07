@@ -18,4 +18,9 @@ public:
     void visit(CompoundStmtNode *e) override;
     void visit(ArrTypeNode *e) override;
     void visit(ArrDeclarationNode *e) override;
+    void visit(AssignmentNode *e) override;
+    void visit(PrintNode *e) override;
+    void visit(ReadNode *e) override;
+    void visit(ReturnNode *e) override;
+    void visit(WhileNode *e) override;
 };

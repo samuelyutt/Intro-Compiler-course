@@ -15,6 +15,11 @@
 #include "include/AST/statement.hpp"
 #include "include/AST/arrtype.hpp"
 #include "include/AST/arrdeclaration.hpp"
+#include "include/AST/assignment.hpp"
+#include "include/AST/print.hpp"
+#include "include/AST/read.hpp"
+#include "include/AST/return.hpp"
+#include "include/AST/while.hpp"
 
 
 #include "include/core/error.h"
@@ -48,7 +53,7 @@ extern "C" int yyparse();
 static void yyerror(const char *msg);
 
 static ProgramNode *root;
-static CompoundStmtNode *t;
+static AssignmentNode *t;
 //static ConstantValueNode *t2;
 
 //std::vector<VariableNode*>      v_variable_node;
@@ -70,6 +75,11 @@ static CompoundStmtNode *t;
     #include "AST/statement.hpp"
     #include "AST/arrtype.hpp"
     #include "AST/arrdeclaration.hpp"
+    #include "AST/assignment.hpp"
+    #include "AST/print.hpp"
+    #include "AST/read.hpp"
+    #include "AST/return.hpp"
+    #include "AST/while.hpp"
     //#include "AST/.hpp"
 }
 
@@ -139,6 +149,12 @@ static CompoundStmtNode *t;
 %type<variablereference_node>   VariableReference
 %type<functioncallexpr_node>    FunctionCall
 %type<statement_node>           Statement
+%type<statement_node>           Simple
+%type<statement_node>           Condition
+%type<statement_node>           While
+%type<statement_node>           For
+%type<statement_node>           Return
+%type<statement_node>           FunctionInvokation
 %type<v_statement_node>         Statements
 %type<v_statement_node>         StatementList
 %type<compoundstmt_node>        CompoundStatement
@@ -154,7 +170,6 @@ static CompoundStmtNode *t;
 %type<str>                  ID
 %type<str>                  ScalarType
     
-
 
 %%
     /*
@@ -177,6 +192,8 @@ ProgramBody:
     DeclarationList FunctionList CompoundStatement {
         $$ = new ProgramBodyNode(@1.first_line, @1.first_column);
         if($1 != NULL) $$->v_declarationNode = *$1;
+        //if($1 != NULL) $$->v_declarationNode = *$1;
+        if($3 != NULL) $$->compoundStmtNode = $3;
     }
 ;
 
@@ -398,17 +415,29 @@ Statement:
         $$ = $1;
     }
     |
-    Simple
+    Simple {
+        $$ = $1;
+    }
     |
-    Condition
+    Condition {
+        $$ = $1;
+    }
     |
-    While
+    While {
+        $$ = $1;
+    }
     |
-    For
+    For {
+        $$ = $1;
+    }
     |
-    Return
+    Return {
+        $$ = $1;
+    }
     |
-    FunctionInvokation
+    FunctionInvokation {
+        $$ = $1;
+    }
 ;
 
 CompoundStatement:
@@ -420,16 +449,28 @@ CompoundStatement:
         if($2 != NULL) cnode->v_declarationNode = *$2;
         if($3 != NULL) cnode->v_statementNode = *$3;
         $$ = cnode;
-        t = cnode;
     }
 ;
 
 Simple:
-    VariableReference ASSIGN Expression SEMICOLON
+    VariableReference ASSIGN Expression SEMICOLON {
+        AssignmentNode* anode = new AssignmentNode(@1.first_line, @1.first_column);
+        anode->lvalue = $1;
+        anode->expression = $3;
+        $$ = anode;
+    }
     |
-    PRINT Expression SEMICOLON
+    PRINT Expression SEMICOLON {
+        PrintNode* pnode = new PrintNode(@1.first_line, @1.first_column);
+        pnode->target = $2;
+        $$ = pnode;
+    }
     |
-    READ VariableReference SEMICOLON
+    READ VariableReference SEMICOLON {
+        ReadNode* rnode = new ReadNode(@1.first_line, @1.first_column);
+        rnode->target = $2;
+        $$ = rnode;
+    }
 ;
 
 VariableReference:
@@ -474,7 +515,12 @@ ElseOrNot:
 While:
     WHILE Expression DO
     StatementList
-    END DO
+    END DO {
+        WhileNode* wnode = new WhileNode(@1.first_line, @1.first_column);
+        wnode->condition = $2;
+        wnode->body = *$4;
+        $$ = wnode;
+    }
 ;
 
 For:
@@ -484,7 +530,11 @@ For:
 ;
 
 Return:
-    RETURN Expression SEMICOLON
+    RETURN Expression SEMICOLON {
+        ReturnNode* rnode = new ReturnNode(@1.first_line, @1.first_column);
+        rnode->return_value = $2;
+        $$ = rnode;
+    }
 ;
 
 FunctionInvokation:
@@ -708,7 +758,7 @@ int main(int argc, const char *argv[]) {
     //freeProgramNode(root);
     DumpVisitor dvisitor;
     root->accept(dvisitor);
-    t->accept(dvisitor);
+    //t->accept(dvisitor);
     //t2->accept(dvisitor);
 
     //std::cout << "CPP works!" << std::endl;

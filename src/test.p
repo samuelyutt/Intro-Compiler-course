@@ -1,34 +1,40 @@
 //&S-
 //&T-
 
-decl;
-
-var a1, a2 : integer;
-var b1 : boolean;
-var c1 : real;
-var d1 : string;
-var b1 : 10;
-var d: array 1 to 2 of array 1 to 10 of real;
-
-assign();
-begin
-    var a: integer;
-    var b: boolean;
-    var c: string;
-    var d: array 1 to 2 of array 1 to 10 of real;
-    a := 10;
-    b := false;
-    c := "Compiler Design";
-    d[qq][5] := 10.09;
-    a := not b[8];
-end
-end assign
+control;
 
 begin
-    var a: integer;
-    var b: boolean;
-    begin
-    end
-end
+  var debug: boolean;
+  var counter: integer;
+  
+  // if
+  // if (1 > 0) then
+  //   print true;
+  // else
+  //   print false;
+  // end if
 
-end decl
+  // if debug = true then
+  //   print "[LOG]\n";
+  // end if
+
+  // while
+  counter := 0;
+  while counter < 10 do
+    print "Taiwan No.1\n";
+  end do
+
+  // for
+  // for idx := 0 to 10 do
+  //   begin
+  //     var idx: 10;
+  //     print "ISA (Ideology State Automaton)\n";
+  //   end
+  // end do
+
+  // for idx := 0 to 10 do
+  // end do
+
+  return 11;
+end
+end control
