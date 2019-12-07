@@ -21,6 +21,7 @@
 #include "AST/while.hpp"
 #include "AST/if.hpp"
 #include "AST/for.hpp"
+#include "AST/function.hpp"
 
 class ASTNodeVisitorBase
 {
@@ -46,4 +47,5 @@ public:
     virtual void visit(WhileNode *e) = 0;
     virtual void visit(IfNode *e) = 0;
     virtual void visit(ForNode *e) = 0;
+    virtual void visit(FunctionNode *e) = 0;
 };

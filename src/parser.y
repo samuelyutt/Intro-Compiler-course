@@ -131,12 +131,14 @@ static AssignmentNode *t;
     StatementNode*          statement_node;
     CompoundStmtNode*       compoundstmt_node;
     ArrTypeNode*            arrtype_node;
+    FunctionNode*           function_node;
 
     std::vector<DeclarationNode*>*      v_declaration_node;
     std::vector<VariableNode*>*         v_variable_node;
     std::vector<ExpressionNode*>*       v_expression_node;
     std::vector<StatementNode*>*        v_statement_node;
     std::vector<ArrDeclarationNode*>*   v_arrdecl_node;
+    std::vector<FunctionNode*>*         v_function_node;
 }
 
 %type<program_node>             Program
@@ -165,6 +167,12 @@ static AssignmentNode *t;
 %type<compoundstmt_node>        CompoundStatement
 %type<v_arrdecl_node>           ArrDecl
 %type<arrtype_node>             ArrType
+%type<declaration_node>         FormalArg
+%type<v_declaration_node>       FormalArgs
+%type<v_declaration_node>       FormalArgList
+%type<function_node>            FunctionDeclaration
+%type<v_function_node>          Functions
+%type<v_function_node>          FunctionList
 
 %type<str>                  ProgramName
 %type<str>                  INT_LITERAL
@@ -174,6 +182,9 @@ static AssignmentNode *t;
 %type<str>                  FALSE
 %type<str>                  ID
 %type<str>                  ScalarType
+%type<str>                  FunctionName
+%type<str>                  ReturnType
+%type<str>                  Type
     
 
 %%
@@ -197,7 +208,7 @@ ProgramBody:
     DeclarationList FunctionList CompoundStatement {
         $$ = new ProgramBodyNode(@1.first_line, @1.first_column);
         if($1 != NULL) $$->v_declarationNode = *$1;
-        //if($1 != NULL) $$->v_declarationNode = *$1;
+        if($2 != NULL) $$->v_functionNode = *$2;
         if($3 != NULL) $$->compoundStmtNode = $3;
     }
 ;
@@ -225,41 +236,86 @@ Declarations:
 ;
 
 FunctionList:
-    Epsilon
+    Epsilon {
+        $$ = NULL;
+    }
     |
-    Functions
+    Functions {
+        $$ = $1;
+    }
 ;
 
 Functions:
-    FunctionDeclaration
+    FunctionDeclaration {
+        $$ = new std::vector<FunctionNode*>;
+        $$->emplace_back($1);
+    }
     |
-    Functions FunctionDeclaration
+    Functions FunctionDeclaration {
+        $1->emplace_back($2);
+        $$ = $1;
+    }
 ;
 
 FunctionDeclaration:
     FunctionName L_PARENTHESIS FormalArgList R_PARENTHESIS ReturnType SEMICOLON
     CompoundStatement
-    END FunctionName
+    END FunctionName {
+        $$ = new FunctionNode(@1.first_line, @1.first_column);
+        $$->name.assign($1);
+        if($3 != NULL) $$->parameters = *$3;
+        $$->return_type.assign($5);
+        $$->body = $7;
+    }
 ;
 
 FunctionName:
-    ID
+    ID {
+        $$ = $1;
+    }
 ;
 
 FormalArgList:
-    Epsilon
+    Epsilon {
+        $$ = NULL;
+    }
     |
-    FormalArgs
+    FormalArgs {
+        $$ = $1;
+    }
 ;
 
 FormalArgs:
-    FormalArg
+    FormalArg {
+        $$ = new std::vector<DeclarationNode*>;
+        $$->emplace_back($1);
+    }
     |
-    FormalArgs SEMICOLON FormalArg
+    FormalArgs SEMICOLON FormalArg {
+        $1->emplace_back($3);
+        $$ = $1;
+    }
 ;
 
 FormalArg:
-    IdList COLON Type
+    IdList COLON ScalarType {
+        for (auto variableNode: *$1) {
+            variableNode->type = $3;
+            variableNode->constantValueNode = NULL;
+        }
+        $$ = new DeclarationNode(@1.first_line, @1.first_column);
+        $$->v_variableNode = *$1;
+    }
+    |
+    IdList COLON ArrType {
+        for (auto variableNode: *$1) {
+            variableNode->type = $3->type;
+            variableNode->constantValueNode = NULL;
+            variableNode->arrTypeNode = $3;
+        }
+        $$ = new DeclarationNode(@1.first_line, @1.first_column);
+        $$->v_variableNode = *$1;
+    }
 ;
 
 IdList:
@@ -279,9 +335,13 @@ IdList:
 ;
 
 ReturnType:
-    COLON ScalarType
+    COLON ScalarType {
+        $$ = $2;
+    }
     |
-    Epsilon
+    Epsilon {
+        $$ = "void";
+    }
 ;
 
     /*

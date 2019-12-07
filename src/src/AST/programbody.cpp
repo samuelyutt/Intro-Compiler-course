@@ -13,9 +13,9 @@ void ProgramBodyNode::printNode(){
 	for (auto declarationNode: v_declarationNode) {
     	declarationNode->accept(dvisitor);
     }
-    // for (auto declarationNode: v_declarationNode) {
-    // 	declarationNode->accept(dvisitor);
-    // }
+    for (auto functionNode: v_functionNode) {
+    	functionNode->accept(dvisitor);
+    }
     if (compoundStmtNode != NULL) {
 	    compoundStmtNode->accept(dvisitor);
 	}

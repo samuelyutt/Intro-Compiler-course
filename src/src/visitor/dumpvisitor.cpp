@@ -104,3 +104,8 @@ void DumpVisitor::visit(ForNode *e)
 {
     e->printNode();
 }
+
+void DumpVisitor::visit(FunctionNode *e)
+{
+    e->printNode();
+}
