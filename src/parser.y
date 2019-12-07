@@ -23,8 +23,6 @@
 #include "include/AST/if.hpp"
 #include "include/AST/for.hpp"
 #include "include/AST/functioninvokation.hpp"
-
-
 #include "include/core/error.h"
 #include "include/visitor/dumpvisitor.hpp"
 
@@ -82,7 +80,6 @@ static ProgramNode *root;
     #include "AST/if.hpp"
     #include "AST/for.hpp"
     #include "AST/functioninvokation.hpp"
-    //#include "AST/.hpp"
 }
 
     /* Delimiter */
@@ -117,20 +114,19 @@ static ProgramNode *root;
 %token STRING_LITERAL
 
 %union {
-    char*                   str;
-    ProgramNode*            program_node;
-    ProgramBodyNode*        programbody_node;
-    DeclarationNode*        declaration_node;
-    ConstantValueNode*      constantvalue_node;
-    ExpressionNode*         expression_node;
-    VariableNode*           variable_node;
-    VariableReferenceNode*  variablereference_node;
-    FunctionCallExprNode*   functioncallexpr_node;
-    StatementNode*          statement_node;
-    CompoundStmtNode*       compoundstmt_node;
-    ArrTypeNode*            arrtype_node;
-    FunctionNode*           function_node;
-
+    char*                               str;
+    ProgramNode*                        program_node;
+    ProgramBodyNode*                    programbody_node;
+    DeclarationNode*                    declaration_node;
+    ConstantValueNode*                  constantvalue_node;
+    ExpressionNode*                     expression_node;
+    VariableNode*                       variable_node;
+    VariableReferenceNode*              variablereference_node;
+    FunctionCallExprNode*               functioncallexpr_node;
+    StatementNode*                      statement_node;
+    CompoundStmtNode*                   compoundstmt_node;
+    ArrTypeNode*                        arrtype_node;
+    FunctionNode*                       function_node;
     std::vector<DeclarationNode*>*      v_declaration_node;
     std::vector<VariableNode*>*         v_variable_node;
     std::vector<ExpressionNode*>*       v_expression_node;
@@ -171,18 +167,17 @@ static ProgramNode *root;
 %type<function_node>            FunctionDeclaration
 %type<v_function_node>          Functions
 %type<v_function_node>          FunctionList
-
-%type<str>                  ProgramName
-%type<str>                  INT_LITERAL
-%type<str>                  REAL_LITERAL
-%type<str>                  STRING_LITERAL
-%type<str>                  TRUE
-%type<str>                  FALSE
-%type<str>                  ID
-%type<str>                  ScalarType
-%type<str>                  FunctionName
-%type<str>                  ReturnType
-%type<str>                  Type
+%type<str>                      ProgramName
+%type<str>                      INT_LITERAL
+%type<str>                      REAL_LITERAL
+%type<str>                      STRING_LITERAL
+%type<str>                      TRUE
+%type<str>                      FALSE
+%type<str>                      ID
+%type<str>                      ScalarType
+%type<str>                      FunctionName
+%type<str>                      ReturnType
+%type<str>                      Type
     
 
 %%
@@ -887,8 +882,6 @@ int main(int argc, const char *argv[]) {
     //freeProgramNode(root);
     DumpVisitor dvisitor;
     root->accept(dvisitor);
-    //t->accept(dvisitor);
-    //t2->accept(dvisitor);
 
     //std::cout << "CPP works!" << std::endl;
     printf("\n"
