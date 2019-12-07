@@ -56,10 +56,6 @@ extern "C" int yyparse();
 static void yyerror(const char *msg);
 
 static ProgramNode *root;
-static AssignmentNode *t;
-//static ConstantValueNode *t2;
-
-//std::vector<VariableNode*>      v_variable_node;
 %}
 
 %locations
@@ -521,7 +517,7 @@ CompoundStatement:
 
 Simple:
     VariableReference ASSIGN Expression SEMICOLON {
-        AssignmentNode* node = new AssignmentNode(@1.first_line, @1.first_column);
+        AssignmentNode* node = new AssignmentNode(@2.first_line, @2.first_column);
         node->lvalue = $1;
         node->expression = $3;
         $$ = node;
@@ -805,7 +801,7 @@ Expression:
     |
     Expression NOT_EQUAL Expression {
         BinaryOperatorNode* node = new BinaryOperatorNode(@2.first_line, @2.first_column);
-        node->op = "!=";
+        node->op = "<>";
         node->leftOperand = $1;
         node->rightOperand = $3;
         $$ = node;
@@ -868,6 +864,13 @@ void yyerror(const char *msg) {
     exit(-1);
 }
 
+int tabcount;
+
+void tab(int count) {
+    for (int i = 0; i < count; i++)
+        std::cout << "  ";
+}
+
 int main(int argc, const char *argv[]) {
     CHECK(argc >= 2, "Usage: ./parser <filename>\n");
 
@@ -877,6 +880,7 @@ int main(int argc, const char *argv[]) {
     yyin = fp;
     yyparse();
 
+    tabcount = 0;
     //freeProgramNode(root);
     DumpVisitor dvisitor;
     root->accept(dvisitor);

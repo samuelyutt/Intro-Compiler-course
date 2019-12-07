@@ -4,10 +4,14 @@
 #include "visitor/dumpvisitor.hpp"
 
 using namespace std;
+extern int tabcount;
+extern void tab(int count);
 FunctionNode::FunctionNode(uint32_t line, uint32_t col): ASTNodeBase(line,col){
 }
 
 void FunctionNode::printNode(){
+    tabcount++;
+    tab(tabcount);
     DumpVisitor dvisitor;
 	cout << "function declaration <line: " << location.line << ", col: " << location.col << "> " <<
     name << " " << return_type << " (";
@@ -35,6 +39,7 @@ void FunctionNode::printNode(){
         parameter->accept(dvisitor);
     }
     body->accept(dvisitor);
+    tabcount--;
 }
 
 FunctionNode::~FunctionNode(){

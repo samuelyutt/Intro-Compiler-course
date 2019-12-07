@@ -8,7 +8,6 @@ ProgramBodyNode::ProgramBodyNode(uint32_t line, uint32_t col): ASTNodeBase(line,
 }
 
 void ProgramBodyNode::printNode(){
-	//cout << "program <line: " << location.line << ", col: " << location.col << "> " << name << " void" << endl;
     DumpVisitor dvisitor;
 	for (auto declarationNode: v_declarationNode) {
     	declarationNode->accept(dvisitor);

@@ -4,10 +4,14 @@
 #include "visitor/dumpvisitor.hpp"
 
 using namespace std;
+extern int tabcount;
+extern void tab(int count);
 VariableNode::VariableNode(uint32_t line, uint32_t col): ASTNodeBase(line,col){
 }
 
 void VariableNode::printNode(){
+	tabcount++;
+    tab(tabcount);
     DumpVisitor dvisitor;
 	cout << "variable <line: " << location.line << ", col: " << location.col << "> " << 
 	name << " " << type;
@@ -18,6 +22,7 @@ void VariableNode::printNode(){
 	if (constantValueNode != NULL) {
 	    constantValueNode->accept(dvisitor);
 	}
+	tabcount--;
 }
 
 VariableNode::~VariableNode(){
