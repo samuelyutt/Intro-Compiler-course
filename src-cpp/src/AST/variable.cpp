@@ -66,3 +66,38 @@ string VariableNode::getType() {
     }
     return this->variable_type;
 }
+
+string VariableNode::getTypeForTable() {
+    switch(this->type->type_set){
+        case SET_SCALAR:
+        case SET_CONSTANT_LITERAL:
+            switch(this->type->type){
+                case TYPE_INTEGER: this->variable_type = "integer"; break;
+                case TYPE_REAL:    this->variable_type = "real"; break;
+                case TYPE_STRING:  this->variable_type = "string"; break;
+                case TYPE_BOOLEAN: this->variable_type = "boolean"; break;
+                default:           this->variable_type = "unknown"; break;
+            }
+            break;
+        case SET_ACCUMLATED:
+            switch(this->type->type){
+                case TYPE_INTEGER: this->variable_type = "integer"; break;
+                case TYPE_REAL:    this->variable_type = "real"; break;
+                case TYPE_STRING:  this->variable_type = "string"; break;
+                case TYPE_BOOLEAN: this->variable_type = "boolean"; break;
+                default:           this->variable_type = "unknown"; break;
+            }
+
+            for(uint i=0; i<this->type->array_range.size(); i++){
+                if (i == 0) this->variable_type += " ";
+                this->variable_type += "[";
+                this->variable_type += to_string(this->type->array_range[i].end - this->type->array_range[i].start);
+                this->variable_type += "]";
+            }
+            break;
+        default:
+            this->variable_type = "unknown";
+            break;
+    }
+    return this->variable_type;
+}

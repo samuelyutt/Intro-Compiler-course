@@ -1142,6 +1142,11 @@ void yyerror(const char *msg) {
     exit(-1);
 }
 
+void semanticAnalyzer(ASTNodeBase* node){
+    SemanticAnalyzer visitor;
+    node->accept(visitor);
+}
+
 void dumpAST(ASTNodeBase* node){
     ASTDumper visitor;
     node->accept(visitor);
@@ -1165,8 +1170,11 @@ int main(int argc, const char *argv[]) {
     yyin = fp;
     yyparse();
 
+
     if(argc == 3 && isDumpNeed == 0)
         dumpAST(AST);
+    
+    semanticAnalyzer(AST);
 
 	// TODO: construct a SemanticAnalyzer to analyze the AST
 

@@ -24,4 +24,5 @@ class VariableNode : public ASTNodeBase
         void accept(ASTVisitorBase &v) {v.visit(this); }
         void print();
         string getType();
+        string getTypeForTable();
 };
