@@ -64,6 +64,9 @@ struct id_info{
 
 static Node AST;
 
+FILE *fp;
+string fname;
+
 %}
     /* Useful Header */
 %code requires { #include "AST/ast.hpp" }
@@ -1164,7 +1167,9 @@ int main(int argc, const char *argv[]) {
         }
     }
         
-    FILE *fp = fopen(argv[1], "r");
+    //FILE *fp = fopen(argv[1], "r");
+    fname = argv[1];
+    fp = fopen(argv[1], "r");
 
     CHECK(fp != NULL, "fopen() fails.\n");
     yyin = fp;

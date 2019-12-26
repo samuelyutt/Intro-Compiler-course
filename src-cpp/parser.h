@@ -40,43 +40,43 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 69 "parser.y" /* yacc.c:1909  */
- #include "AST/ast.hpp" 
-#line 70 "parser.y" /* yacc.c:1909  */
- #include "AST/program.hpp" 
-#line 71 "parser.y" /* yacc.c:1909  */
- #include "AST/declaration.hpp" 
 #line 72 "parser.y" /* yacc.c:1909  */
- #include "AST/variable.hpp" 
+ #include "AST/ast.hpp" 
 #line 73 "parser.y" /* yacc.c:1909  */
- #include "AST/constant_value.hpp" 
+ #include "AST/program.hpp" 
 #line 74 "parser.y" /* yacc.c:1909  */
- #include "AST/function.hpp" 
+ #include "AST/declaration.hpp" 
 #line 75 "parser.y" /* yacc.c:1909  */
- #include "AST/compound_statement.hpp" 
+ #include "AST/variable.hpp" 
 #line 76 "parser.y" /* yacc.c:1909  */
- #include "AST/assignment.hpp" 
+ #include "AST/constant_value.hpp" 
 #line 77 "parser.y" /* yacc.c:1909  */
- #include "AST/print.hpp" 
+ #include "AST/function.hpp" 
 #line 78 "parser.y" /* yacc.c:1909  */
- #include "AST/read.hpp" 
+ #include "AST/compound_statement.hpp" 
 #line 79 "parser.y" /* yacc.c:1909  */
- #include "AST/variable_reference.hpp" 
+ #include "AST/assignment.hpp" 
 #line 80 "parser.y" /* yacc.c:1909  */
- #include "AST/binary_operator.hpp" 
+ #include "AST/print.hpp" 
 #line 81 "parser.y" /* yacc.c:1909  */
- #include "AST/unary_operator.hpp" 
+ #include "AST/read.hpp" 
 #line 82 "parser.y" /* yacc.c:1909  */
- #include "AST/if.hpp" 
+ #include "AST/variable_reference.hpp" 
 #line 83 "parser.y" /* yacc.c:1909  */
- #include "AST/while.hpp" 
+ #include "AST/binary_operator.hpp" 
 #line 84 "parser.y" /* yacc.c:1909  */
- #include "AST/for.hpp" 
+ #include "AST/unary_operator.hpp" 
 #line 85 "parser.y" /* yacc.c:1909  */
- #include "AST/return.hpp" 
+ #include "AST/if.hpp" 
 #line 86 "parser.y" /* yacc.c:1909  */
- #include "AST/function_call.hpp" 
+ #include "AST/while.hpp" 
 #line 87 "parser.y" /* yacc.c:1909  */
+ #include "AST/for.hpp" 
+#line 88 "parser.y" /* yacc.c:1909  */
+ #include "AST/return.hpp" 
+#line 89 "parser.y" /* yacc.c:1909  */
+ #include "AST/function_call.hpp" 
+#line 90 "parser.y" /* yacc.c:1909  */
  #include "visitor/visitor.hpp" 
 
 #line 83 "parser.h" /* yacc.c:1909  */
@@ -143,7 +143,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 90 "parser.y" /* yacc.c:1909  */
+#line 93 "parser.y" /* yacc.c:1909  */
 
     int    val;
     double dval;

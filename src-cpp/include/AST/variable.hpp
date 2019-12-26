@@ -25,4 +25,5 @@ class VariableNode : public ASTNodeBase
         void print();
         string getType();
         string getTypeForTable();
+        int isArrRangeAvbl();
 };

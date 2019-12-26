@@ -68,36 +68,51 @@ string VariableNode::getType() {
 }
 
 string VariableNode::getTypeForTable() {
+    string ret;
     switch(this->type->type_set){
         case SET_SCALAR:
         case SET_CONSTANT_LITERAL:
             switch(this->type->type){
-                case TYPE_INTEGER: this->variable_type = "integer"; break;
-                case TYPE_REAL:    this->variable_type = "real"; break;
-                case TYPE_STRING:  this->variable_type = "string"; break;
-                case TYPE_BOOLEAN: this->variable_type = "boolean"; break;
-                default:           this->variable_type = "unknown"; break;
+                case TYPE_INTEGER: ret = "integer"; break;
+                case TYPE_REAL:    ret = "real"; break;
+                case TYPE_STRING:  ret = "string"; break;
+                case TYPE_BOOLEAN: ret = "boolean"; break;
+                default:           ret = "unknown"; break;
             }
             break;
         case SET_ACCUMLATED:
             switch(this->type->type){
-                case TYPE_INTEGER: this->variable_type = "integer"; break;
-                case TYPE_REAL:    this->variable_type = "real"; break;
-                case TYPE_STRING:  this->variable_type = "string"; break;
-                case TYPE_BOOLEAN: this->variable_type = "boolean"; break;
-                default:           this->variable_type = "unknown"; break;
+                case TYPE_INTEGER: ret = "integer"; break;
+                case TYPE_REAL:    ret = "real"; break;
+                case TYPE_STRING:  ret = "string"; break;
+                case TYPE_BOOLEAN: ret = "boolean"; break;
+                default:           ret = "unknown"; break;
             }
 
             for(uint i=0; i<this->type->array_range.size(); i++){
-                if (i == 0) this->variable_type += " ";
-                this->variable_type += "[";
-                this->variable_type += to_string(this->type->array_range[i].end - this->type->array_range[i].start);
-                this->variable_type += "]";
+                if (i == 0) ret += " ";
+                ret += "[";
+                ret += to_string(this->type->array_range[i].end - this->type->array_range[i].start);
+                ret += "]";
             }
             break;
         default:
-            this->variable_type = "unknown";
+            ret = "unknown";
             break;
     }
-    return this->variable_type;
+    return ret;
+}
+
+int VariableNode::isArrRangeAvbl() {
+    switch(this->type->type_set){
+        case SET_ACCUMLATED:
+            for(uint i=0; i<this->type->array_range.size(); i++){
+                if (this->type->array_range[i].end - this->type->array_range[i].start <= 0)
+                    return 0;
+            }
+            break;
+        default:
+            break;
+    }
+    return 1;
 }
