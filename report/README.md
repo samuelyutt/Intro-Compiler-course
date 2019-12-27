@@ -4,7 +4,7 @@ Project Assignment 4 - Semantic Definitions
 學生：游騰德
 學號：0616026
 
-This assignment is to perform semantic analyses for a `P` program. In the previous project, you have constructed an abstract syntax tree (AST). This assignment requires to do some simple checking of semantic correctness. Code generation will be performed in the last phase of the project.
+This assignment is to perform semantic analyses for a `P` program. In the previous project, an abstract syntax tree (AST) is constructed. This assignment requires to do some simple checking of semantic correctness. Code generation will be performed in the last phase of the project.
 **Note: I used visitor pattern in ths assignment**
 
 Changes I made
