@@ -22,6 +22,7 @@
 #include "semantic/SymbolTable.hpp"
 #include "semantic/ErrorMsg.hpp"
 #include "semantic/DumpSymbolTable.hpp"
+#include "gen/codegen.hpp"
 #include "core/error.h"
 
 #include <stdio.h>
@@ -67,6 +68,7 @@ struct id_info{
 };
 
 static Node AST;
+FILE *ofp;
 
 %}
     /* Useful Header */
@@ -93,6 +95,7 @@ static Node AST;
 %code requires { #include "semantic/SymbolTable.hpp" }
 %code requires { #include "semantic/ErrorMsg.hpp" }
 %code requires { #include "semantic/DumpSymbolTable.hpp" }
+%code requires { #include "gen/codegen.hpp" }
 
     /* Union Define */
 %union {
@@ -1157,16 +1160,41 @@ void dumpAST(ASTNodeBase* node){
 }
 
 int main(int argc, const char *argv[]) {
-    CHECK((argc >= 2) && (argc<=3), "Usage: ./parser <filename> [--dump-ast]\n");
+    // CHECK((argc >= 2) && (argc<=3), "Usage: ./parser <filename> [--dump-ast]\n");
     
-    int isDumpNeed;
+    ////////////////////////////////
+    // int isDumpNeed;
+    // if(argc == 3){
+    //     isDumpNeed = strcmp(argv[2], "--dump-ast");
+    //     if(isDumpNeed != 0){
+    //         fprintf(stderr, "Usage: ./parser <filename> [--dump-ast]\n");
+    //         exit(-1);                                                          
+    //     }
+    // }
+    ////////////////////////////////
+    string outputFileName;
+    int isOutputCodeNeed;
     if(argc == 3){
-        isDumpNeed = strcmp(argv[2], "--dump-ast");
-        if(isDumpNeed != 0){
-            fprintf(stderr, "Usage: ./parser <filename> [--dump-ast]\n");
+        isOutputCodeNeed = strcmp(argv[2], "--output_code_dir");
+        if(isOutputCodeNeed != 0){
+            fprintf(stderr, "Usage: ./compiler <filename> --output_code_dir [output directory name]\n");
             exit(-1);                                                          
         }
+        outputFileName = "";
     }
+    
+    //int isOutputCodeNeed;
+    if(argc == 4){
+        isOutputCodeNeed = strcmp(argv[2], "--output_code_dir");
+        if(isOutputCodeNeed != 0){
+            fprintf(stderr, "Usage: ./compiler <filename> --output_code_dir [output directory name]\n");
+            exit(-1);                                                          
+        }
+        outputFileName = string(argv[3]) + "/";
+    }
+
+    //std::cout << "parser output: " << outputFileName << endl;
+
         
     FILE *fp = fopen(argv[1], "r");
 
@@ -1174,15 +1202,19 @@ int main(int argc, const char *argv[]) {
     yyin = fp;
     yyparse();
 
-    if(argc == 3 && isDumpNeed == 0)
-        dumpAST(AST);
+    // if(argc == 3 && isDumpNeed == 0)
+    //     dumpAST(AST);
 
 	// TODO: construct a SemanticAnalyzer to analyze the AST
     SemanticAnalyzer semantic_analyzer(string(argv[1]), fp);
+
+    outputFileName = outputFileName + semantic_analyzer.getfilename() + ".s";
+    ofp = fopen(outputFileName.c_str(), "w");
+
     AST->accept(semantic_analyzer);
 
-    if(OptDum == 1)
-        semantic_analyzer.dump_symbol_table();
+    // if(OptDum == 1)
+    //     semantic_analyzer.dump_symbol_table();
     
     if(semantic_analyzer.is_semantic_error() == 0)
         printf("\n"

@@ -37,6 +37,7 @@ class SemanticAnalyzer : public ASTVisitorBase {
     void dump_symbol_table();
     void output_err_msg();
     int is_semantic_error();
+    string getfilename() {return filename;}
 
   private: // TODO
     class SymbolTable *symbol_table_root;

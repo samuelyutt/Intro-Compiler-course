@@ -17,9 +17,13 @@ VISITOR := $(shell find $(VISITORDIR) -name '*.cpp')
 SEMANTICDIR = src/semantic/
 SEMANTIC := $(shell find $(SEMANTICDIR) -name '*.cpp')
 
+GENDIR = src/gen/
+GEN := $(shell find $(GENDIR) -name '*.cpp')
+
 SRC := $(AST) \
        $(VISITOR) \
-	   $(SEMANTIC)
+	   $(SEMANTIC) \
+	   $(GEN)
 
 EXEC = $(PARSER)
 OBJS = $(PARSER:=.cpp) \
@@ -43,7 +47,7 @@ $(PARSER).cpp: %.cpp: %.y
 	$(CC) -o $@ $(CFLAGS) $(INCLUDE) -c -MMD $<
 
 $(EXEC): $(OBJS)
-	$(CC) -o $@ $^ $(LIBS) $(INCLUDE)
+	$(CC) -o compiler $^ $(LIBS) $(INCLUDE)
 
 clean:
 	$(RM) $(DEPS) $(SCANNER:=.cpp) $(PARSER:=.cpp) $(OBJS) $(EXEC)

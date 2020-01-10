@@ -20,11 +20,13 @@
 #include "semantic/DumpSymbolTable.hpp"
 #include "semantic/ErrorMsg.hpp"
 #include "semantic/SymbolTable.hpp"
+#include "gen/codegen.hpp"
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
 using namespace std;
 
+int global_decl = 0, leftRight = 0, ass = 0;
 //
 // TODO: implementations of visit(xxxxNode *)
 //
@@ -33,6 +35,8 @@ void SemanticAnalyzer::visit(ProgramNode *m) {
     // Put Symbol Table (Special Case)
     SymbolTable *new_scope = new SymbolTable(0);
     this->push(new_scope, PROGRAM_NODE, VariableInfo(UNKNOWN_SET, TYPE_VOID));
+
+    //test1(5);
 
     // Push Symbol Entity
     if (this->current_scope->redeclare_check(m->program_name) == false) {
@@ -49,21 +53,32 @@ void SemanticAnalyzer::visit(ProgramNode *m) {
                         Attribute(NO_ATTRIBUTE), PROGRAM_NODE, m, NULL, NULL));
     }
 
+    gen_program_start(m->program_name);
+
     // Visit Child Nodes
     this->push_src_node(PROGRAM_NODE);
-    if (m->declaration_node_list != nullptr)
+
+    global_decl = 1;
+    if (m->declaration_node_list != nullptr) {
         for (uint i = 0; i < m->declaration_node_list->size(); i++) {
             (*(m->declaration_node_list))[i]->accept(*this);
         }
+    }
+    global_decl = 0;
 
-    if (m->function_node_list != nullptr)
+    if (m->function_node_list != nullptr) {
         for (uint i = 0; i < m->function_node_list->size(); i++) {
             (*(m->function_node_list))[i]->accept(*this);
         }
+    }
+
+    gen_main_start();
 
     if (m->compound_statement_node != nullptr)
         m->compound_statement_node->accept(*this);
     this->pop_src_node();
+
+    gen_main_end();
 
     // Semantic Analyses of Program Node
     if (m->program_name != this->filename) {
@@ -139,10 +154,20 @@ void SemanticAnalyzer::visit(VariableNode *m) {
             this->current_scope->put(SymbolEntry(
                 m->variable_name, KIND_VARIABLE, this->level, *(m->type),
                 Attribute(NO_ATTRIBUTE), VARIABLE_NODE, NULL, m, NULL));
+            if (global_decl) {
+                gen_global_decl(m->variable_name);
+            } else {
+                gen_local_decl(m->variable_name, 0);
+            }
         } else {
             this->current_scope->put(SymbolEntry(
                 m->variable_name, KIND_CONSTANT, this->level, *(m->type),
                 Attribute(*(m->type)), VARIABLE_NODE, NULL, m, NULL));
+            if (global_decl) {
+                gen_global_decl_const(m->variable_name, (*(m->type)).int_literal);
+            } else {
+                gen_local_decl(m->variable_name, (*(m->type)).int_literal);
+            }
         }
     }
 
@@ -173,6 +198,7 @@ void SemanticAnalyzer::visit(VariableNode *m) {
 
 void SemanticAnalyzer::visit(ConstantValueNode *m) { // EXPRESSION
     this->expression_stack.push(*(m->constant_value));
+    gen_load_int(leftRight, (*(m->constant_value)).int_literal);
 }
 
 void SemanticAnalyzer::visit(FunctionNode *m) {
@@ -263,13 +289,18 @@ void SemanticAnalyzer::visit(CompoundStatementNode *m) { // STATEMENT
 
 void SemanticAnalyzer::visit(AssignmentNode *m) { // STATEMENT
     // Visit Child Node
+    //cout << "assign output: " << (*(m->variable_reference_node)).name << endl;
     this->push_src_node(ASSIGNMENT_NODE);
+    ass = 1;
     if (m->variable_reference_node != nullptr)
         m->variable_reference_node->accept(*this);
+    ass = 0;
 
     if (m->expression_node != nullptr)
         m->expression_node->accept(*this);
     this->pop_src_node();
+
+    gen_assign((*(m->variable_reference_node)).name);
 
     // Semantic Check
     VariableInfo r_type = this->expression_stack.top();
@@ -504,6 +535,9 @@ void SemanticAnalyzer::visit(VariableReferenceNode *m) { // EXPRESSION
     // Part 2:
     // Semantic Check
     // Normal Case
+    if (!ass)
+        gen_load_word(m->variable_name);
+
     bool m_error = false;
     if (check_symbol_inside(m->variable_name) == false) {
         this->semantic_error = 1;
@@ -612,11 +646,14 @@ void SemanticAnalyzer::visit(VariableReferenceNode *m) { // EXPRESSION
 void SemanticAnalyzer::visit(BinaryOperatorNode *m) { // EXPRESSION
     // Visit Child Node
     this->push_src_node(BINARY_OPERATOR_NODE);
+    leftRight = 0;
     if (m->left_operand != nullptr)
         m->left_operand->accept(*this);
 
+    leftRight = 1;
     if (m->right_operand != nullptr)
         m->right_operand->accept(*this);
+    leftRight = 0;
     this->pop_src_node();
 
     // Semantic Check // Expression Stack
@@ -625,6 +662,19 @@ void SemanticAnalyzer::visit(BinaryOperatorNode *m) { // EXPRESSION
     VariableInfo lhs = this->expression_stack.top();
     this->expression_stack.pop();
     bool error = false;
+
+    switch (m->op) {
+        case OP_PLUS:
+            gen_binary(0); break;
+        case OP_MINUS:
+            gen_binary(1); break;
+        case OP_MULTIPLY:
+            gen_binary(2); break;
+        case OP_DIVIDE:
+            gen_binary(3); break;
+        case OP_MOD:
+            gen_binary(4); break;
+    }
 
     if (fault_type_check(lhs) && fault_type_check(rhs)) {
         switch (m->op) {
