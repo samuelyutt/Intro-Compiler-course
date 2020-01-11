@@ -2,6 +2,7 @@
 #include <string>
 using namespace std;
 
+int get_label_count(int add);
 void gen_program_start(string program_name);
 void gen_main_start();
 void gen_main_end();
@@ -26,4 +27,3 @@ void gen_label(int label_num);
 void gen_condition(int cdn_type, int label_num, int op);
 void gen_jump(int label_num);
 void gen_for_idx_add(string name);
-int get_label_count(int add);

@@ -1079,8 +1079,9 @@ void SemanticAnalyzer::visit(ForNode *m) { // STATEMENT
         m->initial_statement->accept(*this);
     this->specify_off();
 
+    string tmp_for_idx_name = for_idx_name;
     gen_label(lb_ct + 0);
-    gen_load_word(for_idx_name);
+    gen_load_word(tmp_for_idx_name);
 
     if (m->condition != nullptr)
         m->condition->accept(*this);
@@ -1093,7 +1094,7 @@ void SemanticAnalyzer::visit(ForNode *m) { // STATEMENT
             (*(m->body))[i]->accept(*this);
     this->pop_src_node();
 
-    gen_for_idx_add(for_idx_name);
+    gen_for_idx_add(tmp_for_idx_name);
     gen_jump(lb_ct + 0);
     gen_label(lb_ct + 1);
 
@@ -1165,7 +1166,7 @@ void SemanticAnalyzer::visit(FunctionCallNode *m) { // EXPRESSION //STATEMENT
             (*(m->arguments))[i]->accept(*this);
             //gen_func_args(i);
         }
-        for (int i = 0; i < m->arguments->size(); i++) {// REVERSE TRAVERSE
+        for (int i = 0; i < m->arguments->size(); i++) {
             gen_func_args(i);
         }
     }

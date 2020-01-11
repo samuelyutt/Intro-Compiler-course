@@ -4,8 +4,6 @@ using namespace std;
 
 extern FILE *ofp;
 
-int tp_i;
-
 string gb_decl[100];
 int gb_decl_i = 0;
 
@@ -13,7 +11,8 @@ string lc_decl[100][100];
 int lc_decl_i[100] = {0};
 int stack_i = 0;
 
-int param_count = 0, label_count = 1, cdn_count = 0;
+int param_count = 0, label_count = 1, cdn_count = 0, tp_i;
+
 
 int find_lc_decl(string name) {
     for (int i = 0; i < lc_decl_i[ stack_i ]; i++) {
