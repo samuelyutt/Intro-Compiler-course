@@ -2,30 +2,30 @@
 //&T-
 //&D-
 
-expression;
+loop;
 
 var gv: integer;
 var gc: 2;
 
+sum(a,b,c,d,e,f,g,h,i,j: integer): integer;
+begin
+    print j;
+    print i;
+    print h;
+    print g;
+    print f;
+    print e;
+    print d;
+    print c;
+    print b;
+    print a;
+    return i;
+end
+end sum
+
 begin
 
-var lv: integer;
-var lc: 2;
-
-gv := 2;
-lv := 2;
-
-gv := lc + gv + gc + lv;
-lv := lc * gv * gc * lv;
-
+gv := sum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10) + gc;
 print gv;
-print lv;
-
-gv := lc + ((gv + gc) * lv);
-lv := (lc + (gv + (gc + (lv + (lc + (gv + (gc + (lv + lc))))))));
-
-print gv;
-print lv;
-
 end
-end expression
+end loop

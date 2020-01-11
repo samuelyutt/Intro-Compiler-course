@@ -254,7 +254,8 @@ void gen_func_end(string name) {
 void gen_param_decl(string name) {
     int idx = lc_decl_i[ stack_i ];
     lc_decl[ stack_i ][ idx ] = name;
-    fprintf(ofp, "    sw a%d, %d(s0)\n", param_count, -20-idx*4);
+    if (param_count < 8)
+        fprintf(ofp, "    sw a%d, %d(s0)\n", param_count, -20-idx*4);
     idx++;
     param_count++;
     lc_decl_i[ stack_i ] = idx;
@@ -268,7 +269,10 @@ void gen_return() {
 
 
 void gen_func_args(int count) {
-    fprintf(ofp, "    mv a%d, t%d\n", count, get_tp_i(-1));
+    if (count < 8)
+        fprintf(ofp, "    mv a%d, t%d\n", count, get_tp_i(-1));
+    else
+        fprintf(ofp, "    sw t%d, %d(s0)\n", get_tp_i(-1), -64-20-count*4);
     decrease_tp_i();
 }
 
