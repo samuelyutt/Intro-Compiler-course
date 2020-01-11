@@ -14,6 +14,8 @@ string lc_decl[100][100];
 int lc_decl_i[100] = {0};
 int stack_i = 0;
 
+int param_count = 0, label_count = 1, cdn_count = 0;
+
 int find_lc_decl(string name) {
 	for (int i = 0; i < lc_decl_i[ stack_i ]; i++) {
 		if (lc_decl[ stack_i ][i] == name)
@@ -28,6 +30,12 @@ int find_gb_decl(string name) {
 			return i;
 	}
 	return -1;
+}
+
+int get_label_count(int add) {
+	int ret = label_count;
+	label_count += add;
+	return ret;
 }
 
 
@@ -101,6 +109,40 @@ void gen_binary(int op) {
 	tp_i--;
 }
 
+void gen_condition(int cdn_type, int label_num, int op) {
+	string op_instr;
+	if (cdn_type == 1) {
+		switch (op) {
+			case 5: op_instr = "bge"; break;
+			case 6: op_instr = "bgt"; break;
+			case 7: op_instr = "bne"; break;
+			case 8: op_instr = "ble"; break;
+			case 9: op_instr = "blt"; break;
+			case 10: op_instr = "beq"; break;
+		}
+	} else if (cdn_type == 2) {
+		switch (op) {
+			case 5: op_instr = "blt"; break;
+			case 6: op_instr = "ble"; break;
+			case 7: op_instr = "beq"; break;
+			case 8: op_instr = "bgt"; break;
+			case 9: op_instr = "bge"; break;
+			case 10: op_instr = "bne"; break;
+		}
+	}
+	fprintf(ofp, "    %s t%d, t%d, L%d\n", op_instr.c_str(), tp_i-2, tp_i-1, label_num);
+	tp_i--;
+	tp_i--;
+}
+
+void gen_unary(int op) {
+	string op_instr;
+	switch (op) {
+		case 0: op_instr = "muli"; break;
+	}
+	fprintf(ofp, "    %s t%d, t%d, -1\n", op_instr.c_str(), tp_i-1, tp_i-1);
+}
+
 void gen_load_word(string name) {
 	int seq;
 	seq = find_lc_decl(name);
@@ -132,4 +174,77 @@ void gen_assign(string name) {
 		fprintf(ofp, "    sw t0, 0(t1)\n");
 		return;
 	}
+}
+
+void gen_func_start(string name) {
+	fprintf(ofp, ".text\n");
+	fprintf(ofp, "    .align 2\n");
+	fprintf(ofp, "    .global %s\n", name.c_str());
+	fprintf(ofp, "    .type %s, @function\n", name.c_str());
+	fprintf(ofp, "%s:\n", name.c_str());
+	fprintf(ofp, "    addi sp, sp, -64\n");
+	fprintf(ofp, "    sd ra, 56(sp)\n");
+	fprintf(ofp, "    sd s0, 48(sp)\n");
+	fprintf(ofp, "    addi s0, sp, 64\n");
+	stack_i++;
+	param_count = 0;
+}
+
+void gen_func_end(string name) {
+	fprintf(ofp, "    ld ra, 56(sp)\n");
+	fprintf(ofp, "    ld s0, 48(sp)\n");
+	fprintf(ofp, "    addi sp, sp, 64\n");
+	fprintf(ofp, "    jr ra\n");
+	fprintf(ofp, "    .size %s, .-%s\n", name.c_str(), name.c_str());
+	stack_i--;
+}
+
+
+void gen_param_decl(string name) {
+	int idx = lc_decl_i[ stack_i ];
+	lc_decl[ stack_i ][ idx ] = name;
+	fprintf(ofp, "    sw a%d, %d(s0)\n", param_count, -20-idx*4);
+	idx++;
+	param_count++;
+	lc_decl_i[ stack_i ] = idx;
+}
+
+
+void gen_return() {
+	fprintf(ofp, "    mv a0, t0\n");
+	tp_i--;
+}
+
+
+void gen_func_args(int count) {
+	fprintf(ofp, "    mv a%d, t0\n", count);
+	tp_i--;
+}
+
+
+void gen_func_return(string name) {
+	fprintf(ofp, "    jal ra, %s\n", name.c_str());
+	fprintf(ofp, "    mv t%d, a0\n", tp_i);
+	tp_i++;
+}
+
+void gen_print(string name) {
+	fprintf(ofp, "    la t0, %s\n", name.c_str());
+	fprintf(ofp, "    lw a0, 0(t0)\n");
+	fprintf(ofp, "    jal ra, print\n");
+}
+
+
+void gen_read(string name) {
+	fprintf(ofp, "    jal ra, read\n");
+	fprintf(ofp, "    la t0, %s\n", name.c_str());
+	fprintf(ofp, "    sw a0, 0(t0)\n");
+}
+
+void gen_label(int label_num) {
+	fprintf(ofp, "L%d:\n", label_num);
+}
+
+void gen_jump(int label_num) {
+	fprintf(ofp, "    j L%d\n", label_num);
 }

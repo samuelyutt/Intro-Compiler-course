@@ -26,7 +26,8 @@
 #include <iostream>
 using namespace std;
 
-int global_decl = 0, leftRight = 0, ass = 0;
+int global_decl = 0, leftRight = 0, ass = 0, ret = 0, fc = 0, prt = 0, rd = 0;
+int cdn = 0, tmp_lb_ct;
 //
 // TODO: implementations of visit(xxxxNode *)
 //
@@ -144,6 +145,7 @@ void SemanticAnalyzer::visit(VariableNode *m) {
             this->current_scope->put(SymbolEntry(
                 m->variable_name, this->specify_kind, this->level, *(m->type),
                 Attribute(NO_ATTRIBUTE), VARIABLE_NODE, NULL, m, NULL));
+            gen_param_decl(m->variable_name);
         } else {
             this->current_scope->put(SymbolEntry(
                 m->variable_name, this->specify_kind, this->level, *(m->type),
@@ -229,6 +231,8 @@ void SemanticAnalyzer::visit(FunctionNode *m) {
     SymbolTable *new_scope = new SymbolTable(this->level);
     this->push(new_scope, FUNCTION_NODE, *(m->return_type));
 
+    gen_func_start(m->function_name);
+
     // Visit Child Node
     this->push_src_node(FUNCTION_NODE);
     this->specify_on(KIND_PARAMETER);
@@ -252,6 +256,8 @@ void SemanticAnalyzer::visit(FunctionNode *m) {
         this->error_msg +=
             src_notation_msg(this->fp, m->end_line_number, m->end_col_number);
     }
+
+    gen_func_end(m->function_name);
 
     // Pop Scope
     this->pop();
@@ -291,13 +297,14 @@ void SemanticAnalyzer::visit(AssignmentNode *m) { // STATEMENT
     // Visit Child Node
     //cout << "assign output: " << (*(m->variable_reference_node)).name << endl;
     this->push_src_node(ASSIGNMENT_NODE);
-    ass = 1;
+    
     if (m->variable_reference_node != nullptr)
         m->variable_reference_node->accept(*this);
-    ass = 0;
-
+    
+    ass = 1;
     if (m->expression_node != nullptr)
         m->expression_node->accept(*this);
+    ass = 0;
     this->pop_src_node();
 
     gen_assign((*(m->variable_reference_node)).name);
@@ -440,8 +447,10 @@ void SemanticAnalyzer::visit(AssignmentNode *m) { // STATEMENT
 void SemanticAnalyzer::visit(PrintNode *m) { // STATEMENT
     // Visit Child Node
     this->push_src_node(PRINT_NODE);
+    prt = 1;
     if (m->expression_node != nullptr)
         m->expression_node->accept(*this);
+    prt = 0;
     this->pop_src_node();
 
     // Semantic Check
@@ -467,8 +476,10 @@ void SemanticAnalyzer::visit(PrintNode *m) { // STATEMENT
 void SemanticAnalyzer::visit(ReadNode *m) { // STATEMENT
     // Visit Child Node
     this->push_src_node(READ_NODE);
+    rd = 1;
     if (m->variable_reference_node != nullptr)
         m->variable_reference_node->accept(*this);
+    rd = 0;
     this->pop_src_node();
 
     // Semantic Check
@@ -535,8 +546,13 @@ void SemanticAnalyzer::visit(VariableReferenceNode *m) { // EXPRESSION
     // Part 2:
     // Semantic Check
     // Normal Case
-    if (!ass)
+    if (ass || ret || fc || cdn)
         gen_load_word(m->variable_name);
+
+    if (prt)
+        gen_print(m->variable_name);
+    if (rd)
+        gen_read(m->variable_name);
 
     bool m_error = false;
     if (check_symbol_inside(m->variable_name) == false) {
@@ -674,6 +690,18 @@ void SemanticAnalyzer::visit(BinaryOperatorNode *m) { // EXPRESSION
             gen_binary(3); break;
         case OP_MOD:
             gen_binary(4); break;
+        case OP_LESS:
+            gen_condition(cdn, tmp_lb_ct, 5); break;
+        case OP_LESS_OR_EQUAL:
+            gen_condition(cdn, tmp_lb_ct, 6); break;
+        case OP_EQUAL:
+            gen_condition(cdn, tmp_lb_ct, 7); break;
+        case OP_GREATER:
+            gen_condition(cdn, tmp_lb_ct, 8); break;
+        case OP_GREATER_OR_EQUAL:
+            gen_condition(cdn, tmp_lb_ct, 9); break;
+        case OP_NOT_EQUAL:
+            gen_condition(cdn, tmp_lb_ct, 10); break;
     }
 
     if (fault_type_check(lhs) && fault_type_check(rhs)) {
@@ -863,6 +891,10 @@ void SemanticAnalyzer::visit(UnaryOperatorNode *m) { // EXPRESSION
     this->expression_stack.pop();
     bool error = false;
 
+    switch(m->op) {
+        case OP_MINUS: gen_unary(0);
+    }
+
     if (fault_type_check(rhs)) {
         switch (m->op) {
         case OP_NOT:
@@ -929,17 +961,30 @@ void SemanticAnalyzer::visit(UnaryOperatorNode *m) { // EXPRESSION
 void SemanticAnalyzer::visit(IfNode *m) { // STATEMENT
     // Visit Child Nodes
     this->push_src_node(IF_NODE);
+
+    int lb_ct = get_label_count(3);
+    tmp_lb_ct = lb_ct + 1;
+
+    cdn = 1;
     if (m->condition != nullptr)
         m->condition->accept(*this);
+    cdn = 0;
+
+    gen_label(lb_ct + 0);
 
     if (m->body != nullptr)
         for (uint i = 0; i < m->body->size(); i++)
             (*(m->body))[i]->accept(*this);
 
+    gen_jump(lb_ct + 2);
+    gen_label(lb_ct + 1);
+
     if (m->body_of_else != nullptr)
         for (uint i = 0; i < m->body_of_else->size(); i++)
             (*(m->body_of_else))[i]->accept(*this);
     this->pop_src_node();
+
+    gen_label(lb_ct + 2);
 
     // Semantic Check
     VariableInfo tmpInfo = this->expression_stack.top();
@@ -961,13 +1006,24 @@ void SemanticAnalyzer::visit(IfNode *m) { // STATEMENT
 
 void SemanticAnalyzer::visit(WhileNode *m) { // STATEMENT
     // Visit Child Nodes
-    this->push_src_node(WHILE_NODE);
-    if (m->condition != nullptr)
-        m->condition->accept(*this);
+    this->push_src_node(WHILE_NODE); 
+
+    int lb_ct = get_label_count(2);
+    gen_jump(lb_ct + 1);
+    gen_label(lb_ct);
 
     if (m->body != nullptr)
         for (uint i = 0; i < m->body->size(); i++)
             (*(m->body))[i]->accept(*this);
+
+    gen_label(lb_ct + 1);
+
+    tmp_lb_ct = lb_ct;
+    cdn = 2;
+    if (m->condition != nullptr)
+        m->condition->accept(*this);
+    cdn = 0;   
+
     this->pop_src_node();
 
     // Semantic Check
@@ -1032,9 +1088,13 @@ void SemanticAnalyzer::visit(ForNode *m) { // STATEMENT
 void SemanticAnalyzer::visit(ReturnNode *m) { // STATEMENT
     // Visit Child Node
     this->push_src_node(RETURN_NODE);
+    ret = 1;
     if (m->return_value != nullptr)
         m->return_value->accept(*this);
+    ret = 0;
     this->pop_src_node();
+
+    gen_return();
 
     // Semantic Check Error
     VariableInfo r_type = this->expression_stack.top();
@@ -1072,10 +1132,16 @@ void SemanticAnalyzer::visit(ReturnNode *m) { // STATEMENT
 void SemanticAnalyzer::visit(FunctionCallNode *m) { // EXPRESSION //STATEMENT
     // Visit Child Node
     this->push_src_node(FUNCTION_CALL_NODE);
+    fc = 1;
     if (m->arguments != nullptr)
-        for (int i = m->arguments->size() - 1; i >= 0; i--) // REVERSE TRAVERSE
+        for (int i = m->arguments->size() - 1; i >= 0; i--) {// REVERSE TRAVERSE
             (*(m->arguments))[i]->accept(*this);
+            gen_func_args(i);
+        }
+    fc = 0;
     this->pop_src_node();
+
+    gen_func_return(m->function_name);
 
     // Semantic Check
     if (check_function_declaration(m->function_name) == false) {
