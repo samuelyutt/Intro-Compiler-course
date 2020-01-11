@@ -32,6 +32,8 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -1160,8 +1162,7 @@ void dumpAST(ASTNodeBase* node){
 }
 
 int main(int argc, const char *argv[]) {
-    // CHECK((argc >= 2) && (argc<=3), "Usage: ./parser <filename> [--dump-ast]\n");
-    
+    CHECK((argc >= 2) && (argc<=4), "Usage: ./compiler <filename> --output_code_dir [output directory name]\n");    
     ////////////////////////////////
     // int isDumpNeed;
     // if(argc == 3){
@@ -1183,21 +1184,30 @@ int main(int argc, const char *argv[]) {
         outputFileName = "";
     }
     
-    //int isOutputCodeNeed;
     if(argc == 4){
         isOutputCodeNeed = strcmp(argv[2], "--output_code_dir");
         if(isOutputCodeNeed != 0){
             fprintf(stderr, "Usage: ./compiler <filename> --output_code_dir [output directory name]\n");
             exit(-1);                                                          
         }
+
+        struct stat info;
+        string tmp1 = "./" + string(argv[3]);
+        string tmp2 = "mkdir " + string(argv[3]);
+        stat(tmp1.c_str() , &info );
+        if( !(info.st_mode & S_IFDIR) )
+            system(tmp2.c_str());
+
         outputFileName = string(argv[3]) + "/";
     }
-
-    //std::cout << "parser output: " << outputFileName << endl;
-
+    
+    struct stat info;
+    stat( "./aaa", &info );
+    if( !(info.st_mode & S_IFDIR) )
+        system("mkdir aaa");
+    
         
     FILE *fp = fopen(argv[1], "r");
-
     CHECK(fp != NULL, "fopen() fails.\n");
     yyin = fp;
     yyparse();
@@ -1227,6 +1237,7 @@ int main(int argc, const char *argv[]) {
     // Memory_Free
     delete AST;
     fclose(fp);
+    fclose(ofp);
     yylex_destroy();
     // Memory_Free_END
     
