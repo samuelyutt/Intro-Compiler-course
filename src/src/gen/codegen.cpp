@@ -5,7 +5,7 @@ using namespace std;
 
 extern FILE *ofp;
 
-int tp_i = 0;
+int tp_i;
 
 string gb_decl[100];
 int gb_decl_i = 0;
@@ -30,6 +30,36 @@ int find_gb_decl(string name) {
 			return i;
 	}
 	return -1;
+}
+
+void increase_tp_i() {
+	tp_i++;
+	if (tp_i > 6) {
+		int idx = lc_decl_i[ stack_i ];
+		lc_decl[ stack_i ][ idx ] = "preserved_for_spilled_tmprys" + to_string(tp_i%7);
+		fprintf(ofp, "    sw t%d, %d(s0)\n", tp_i%7, -20-idx*4);
+		lc_decl_i[ stack_i ] = ++idx;
+	}
+}
+
+void decrease_tp_i() {
+	if (tp_i > 6) {
+		int seq;
+		string tp_name = "preserved_for_spilled_tmprys" + to_string(tp_i%7);
+		seq = find_lc_decl(tp_name);
+		if (seq != -1) {
+			fprintf(ofp, "    lw t%d, %d(s0)\n", tp_i%7, -20-seq*4);
+		}	
+	}
+	tp_i--;
+}
+
+void reset_tp_i() {
+	tp_i = 0;
+}
+
+int get_tp_i(int offset) {
+	return (tp_i + offset)%7;
 }
 
 int get_label_count(int add) {
@@ -94,8 +124,16 @@ void gen_local_decl(string name, int value) {
 }
 
 void gen_load_int(int value) {
-	fprintf(ofp, "    li t%d, %d\n", tp_i, value);
-	tp_i++;
+	fprintf(ofp, "    li t%d, %d\n", get_tp_i(0), value);
+	increase_tp_i();
+}
+
+
+void gen_for_idx_add(string name) {
+	gen_load_word(name);
+	fprintf(ofp, "    addi t%d, t%d, 1\n", get_tp_i(-1), get_tp_i(-1));
+	decrease_tp_i();
+	gen_store_word(name);
 }
 
 void gen_binary(int op) {
@@ -107,8 +145,8 @@ void gen_binary(int op) {
 		case 3: op_instr = "divw"; break;
 		case 4: op_instr = "remw"; break;
 	}
-	fprintf(ofp, "    %s t%d, t%d, t%d\n", op_instr.c_str(), tp_i-2, tp_i-2, tp_i-1);
-	tp_i--;
+	fprintf(ofp, "    %s t%d, t%d, t%d\n", op_instr.c_str(), get_tp_i(-2), get_tp_i(-2), get_tp_i(-1));
+	decrease_tp_i();
 }
 
 void gen_condition(int cdn_type, int label_num, int op) {
@@ -131,10 +169,12 @@ void gen_condition(int cdn_type, int label_num, int op) {
 			case 9: op_instr = "bge"; break;
 			case 10: op_instr = "bne"; break;
 		}
+	} else if (cdn_type == 3) {
+		op_instr = "bge";
 	}
-	fprintf(ofp, "    %s t%d, t%d, L%d\n", op_instr.c_str(), tp_i-2, tp_i-1, label_num);
-	tp_i--;
-	tp_i--;
+	fprintf(ofp, "    %s t%d, t%d, L%d\n", op_instr.c_str(), get_tp_i(-2), get_tp_i(-1), label_num);
+	decrease_tp_i();
+	decrease_tp_i();
 }
 
 void gen_unary(int op) {
@@ -142,22 +182,22 @@ void gen_unary(int op) {
 	switch (op) {
 		case 0: op_instr = "muli"; break;
 	}
-	fprintf(ofp, "    %s t%d, t%d, -1\n", op_instr.c_str(), tp_i-1, tp_i-1);
+	fprintf(ofp, "    %s t%d, t%d, -1\n", op_instr.c_str(), get_tp_i(-1), get_tp_i(-1));
 }
 
 void gen_load_word(string name) {
 	int seq;
 	seq = find_lc_decl(name);
 	if (seq != -1) {
-		fprintf(ofp, "    lw t%d, %d(s0)\n", tp_i, -20-seq*4);
-		tp_i++;
+		fprintf(ofp, "    lw t%d, %d(s0)\n", get_tp_i(0), -20-seq*4);
+		increase_tp_i();
 		return;
 	}	
 	seq = find_gb_decl(name);
 	if (seq != -1) {
-		fprintf(ofp, "    la t%d, %s\n",tp_i+1 , name.c_str());
-		fprintf(ofp, "    lw t%d, 0(t%d)\n", tp_i, tp_i+1);
-		tp_i++;
+		fprintf(ofp, "    la t%d, %s\n",get_tp_i(0) , name.c_str());
+		fprintf(ofp, "    lw t%d, 0(t%d)\n", get_tp_i(0), get_tp_i(0));
+		increase_tp_i();
 		return;
 	}
 }
@@ -166,15 +206,15 @@ void gen_store_word(string name) {
 	int seq;
 	seq = find_lc_decl(name);
 	if (seq != -1) {
-		fprintf(ofp, "    sw t%d, %d(s0)\n",tp_i, -20-seq*4);
-		tp_i++;
+		fprintf(ofp, "    sw t%d, %d(s0)\n",get_tp_i(0), -20-seq*4);
+		//increase_tp_i();
 		return;
 	}	
 	seq = find_gb_decl(name);
 	if (seq != -1) {
-		fprintf(ofp, "    la t%d, %s\n",tp_i+1 , name.c_str());
-		fprintf(ofp, "    sw t%d, 0(t%d)\n", tp_i, tp_i+1);
-		tp_i++;
+		fprintf(ofp, "    la t%d, %s\n",get_tp_i(0) , name.c_str());
+		fprintf(ofp, "    sw t%d, 0(t%d)\n", get_tp_i(0), get_tp_i(0));
+		//increase_tp_i();
 		return;
 	}
 }
@@ -182,7 +222,7 @@ void gen_store_word(string name) {
 void gen_assign(string name) {
 	int seq;
 	seq = find_lc_decl(name);
-	tp_i--;
+	decrease_tp_i();
 	if (seq != -1) {
 		fprintf(ofp, "    sw t0, %d(s0)\n", -20-seq*4);
 		return;
@@ -208,11 +248,6 @@ void gen_func_start(string name) {
 	stack_i++;
 	lc_decl_i[ stack_i ] = 0;
 	param_count = 0;
-
-	//int ret = tp_i;
-	
-
-	//return ret;
 }
 
 void gen_func_end(string name) {
@@ -237,19 +272,19 @@ void gen_param_decl(string name) {
 
 void gen_return() {
 	fprintf(ofp, "    mv a0, t0\n");
-	tp_i--;
+	decrease_tp_i();
 }
 
 
 void gen_func_args(int count) {
 	//fprintf(ofp, "    mv a%d, t0\n", count);
-	fprintf(ofp, "    mv a%d, t%d\n", count, tp_i-1);
-	tp_i--;
+	fprintf(ofp, "    mv a%d, t%d\n", count, get_tp_i(-1));
+	decrease_tp_i();
 }
 
 
 void gen_func_call(string name) {
-	int tmp_tp_i = tp_i;
+	int tmp_tp_i = get_tp_i(0);
 	int idx;
 	int preserved_count = 0;
 	for (int i = 0; i < tmp_tp_i; i++) {
@@ -257,22 +292,22 @@ void gen_func_call(string name) {
 		lc_decl[ stack_i ][ idx ] = "preserved_for_tmprys";
 		fprintf(ofp, "    sw t%d, %d(s0)\n", i, -20-idx*4);
 		lc_decl_i[ stack_i ] = ++idx;
-		tp_i--;
+		decrease_tp_i();
 		preserved_count++;
 	}
 
 	fprintf(ofp, "    jal ra, %s\n", name.c_str());
 
-	tp_i = 0;
+	reset_tp_i();
 	idx = lc_decl_i[ stack_i ];
 	for (int i = 0; i < preserved_count; i++) {
 		fprintf(ofp, "    lw t%d, %d(s0)\n", i, -20-(idx-preserved_count+i)*4);
-		tp_i++;
+		increase_tp_i();
 	}
 
 	lc_decl_i[ stack_i ] = idx - preserved_count;
-	fprintf(ofp, "    mv t%d, a0\n", tp_i);
-	tp_i++;
+	fprintf(ofp, "    mv t%d, a0\n", get_tp_i(0));
+	increase_tp_i();
 }
 
 void gen_print(string name) {
@@ -285,8 +320,8 @@ void gen_print(string name) {
 	}	
 	seq = find_gb_decl(name);
 	if (seq != -1) {
-		fprintf(ofp, "    la t%d, %s\n",tp_i+1 , name.c_str());
-		fprintf(ofp, "    lw a0, 0(t%d)\n", tp_i+1);
+		fprintf(ofp, "    la t%d, %s\n",get_tp_i(0) , name.c_str());
+		fprintf(ofp, "    lw a0, 0(t%d)\n", get_tp_i(0));
 		fprintf(ofp, "    jal ra, print\n");
 		return;
 	}
@@ -303,8 +338,8 @@ void gen_read(string name) {
 	}	
 	seq = find_gb_decl(name);
 	if (seq != -1) {
-		fprintf(ofp, "    la t%d, %s\n",tp_i+1 , name.c_str());
-		fprintf(ofp, "    sw a0, 0(t%d)\n", tp_i+1);
+		fprintf(ofp, "    la t%d, %s\n",get_tp_i(0) , name.c_str());
+		fprintf(ofp, "    sw a0, 0(t%d)\n", get_tp_i(0));
 		return;
 	}
 }

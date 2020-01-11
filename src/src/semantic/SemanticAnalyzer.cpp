@@ -28,6 +28,7 @@ using namespace std;
 
 int global_decl = 0, ass = 0, ret = 0, fc = 0, prt = 0, rd = 0;
 int cdn = 0, tmp_lb_ct;
+string for_idx_name;
 //
 // TODO: implementations of visit(xxxxNode *)
 //
@@ -145,11 +146,18 @@ void SemanticAnalyzer::visit(VariableNode *m) {
             this->current_scope->put(SymbolEntry(
                 m->variable_name, this->specify_kind, this->level, *(m->type),
                 Attribute(NO_ATTRIBUTE), VARIABLE_NODE, NULL, m, NULL));
-            gen_param_decl(m->variable_name);
+            if (cdn)
+                gen_local_decl(m->variable_name, (*(m->type)).int_literal);
+            else
+                gen_param_decl(m->variable_name);
         } else {
             this->current_scope->put(SymbolEntry(
                 m->variable_name, this->specify_kind, this->level, *(m->type),
                 Attribute(*(m->type)), VARIABLE_NODE, NULL, m, NULL));
+            if (cdn)
+                gen_local_decl(m->variable_name, (*(m->type)).int_literal);
+            else
+                gen_param_decl(m->variable_name);
         }
     } else {
         if (m->constant_value_node == nullptr) { // Not Constant
@@ -308,6 +316,9 @@ void SemanticAnalyzer::visit(AssignmentNode *m) { // STATEMENT
     this->pop_src_node();
 
     gen_assign((*(m->variable_reference_node)).name);
+
+    if (cdn == 3)
+        for_idx_name = (*m->variable_reference_node).name;
 
     // Semantic Check
     VariableInfo r_type = this->expression_stack.top();
@@ -1055,6 +1066,10 @@ void SemanticAnalyzer::visit(ForNode *m) { // STATEMENT
     // Visit Child Node
     this->push_src_node(FOR_NODE);
     this->specify_on(KIND_LOOP_VAR);
+
+    int lb_ct = get_label_count(2);
+
+    cdn = 3;
     if (m->loop_variable_declaration != nullptr)
         m->loop_variable_declaration->accept(*this);
     this->specify_off();
@@ -1064,13 +1079,23 @@ void SemanticAnalyzer::visit(ForNode *m) { // STATEMENT
         m->initial_statement->accept(*this);
     this->specify_off();
 
+    gen_label(lb_ct + 0);
+    gen_load_word(for_idx_name);
+
     if (m->condition != nullptr)
         m->condition->accept(*this);
+
+    gen_condition(cdn, lb_ct+1, 5);
+    cdn = 0;
 
     if (m->body != nullptr)
         for (uint i = 0; i < m->body->size(); i++)
             (*(m->body))[i]->accept(*this);
     this->pop_src_node();
+
+    gen_for_idx_add(for_idx_name);
+    gen_jump(lb_ct + 0);
+    gen_label(lb_ct + 1);
 
     // Semantic Check
     if (m->lower_bound > m->upper_bound) {
