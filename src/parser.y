@@ -1199,13 +1199,7 @@ int main(int argc, const char *argv[]) {
             system(tmp2.c_str());
 
         outputFileName = string(argv[3]) + "/";
-    }
-    
-    struct stat info;
-    stat( "./aaa", &info );
-    if( !(info.st_mode & S_IFDIR) )
-        system("mkdir aaa");
-    
+    }  
         
     FILE *fp = fopen(argv[1], "r");
     CHECK(fp != NULL, "fopen() fails.\n");
