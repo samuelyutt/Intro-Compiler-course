@@ -1,10 +1,7 @@
 #pragma once
 #include <string>
 using namespace std;
-//#include "semantic/SemanticAnalyzer.hpp"
-//#include "semantic/SymbolTable.hpp"
 
-void test1(int a);
 void gen_program_start(string program_name);
 void gen_main_start();
 void gen_main_end();
