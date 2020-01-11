@@ -78,11 +78,11 @@ main:
     lw t1, -24(s0)
     sw t2, -36(s0)
     addw t0, t0, t1
-    sw t2, -36(s0)
+    lw t2, -36(s0)
     addw t6, t6, t0
-    sw t1, -32(s0)
+    lw t1, -32(s0)
     addw t5, t5, t6
-    sw t0, -28(s0)
+    lw t0, -28(s0)
     addw t4, t4, t5
     addw t3, t3, t4
     addw t2, t2, t3
