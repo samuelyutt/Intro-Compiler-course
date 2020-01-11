@@ -26,7 +26,7 @@
 #include <iostream>
 using namespace std;
 
-int global_decl = 0, leftRight = 0, ass = 0, ret = 0, fc = 0, prt = 0, rd = 0;
+int global_decl = 0, ass = 0, ret = 0, fc = 0, prt = 0, rd = 0;
 int cdn = 0, tmp_lb_ct;
 //
 // TODO: implementations of visit(xxxxNode *)
@@ -200,7 +200,7 @@ void SemanticAnalyzer::visit(VariableNode *m) {
 
 void SemanticAnalyzer::visit(ConstantValueNode *m) { // EXPRESSION
     this->expression_stack.push(*(m->constant_value));
-    gen_load_int(leftRight, (*(m->constant_value)).int_literal);
+    gen_load_int((*(m->constant_value)).int_literal);
 }
 
 void SemanticAnalyzer::visit(FunctionNode *m) {
@@ -667,14 +667,11 @@ void SemanticAnalyzer::visit(VariableReferenceNode *m) { // EXPRESSION
 void SemanticAnalyzer::visit(BinaryOperatorNode *m) { // EXPRESSION
     // Visit Child Node
     this->push_src_node(BINARY_OPERATOR_NODE);
-    leftRight = 0;
     if (m->left_operand != nullptr)
         m->left_operand->accept(*this);
 
-    leftRight = 1;
     if (m->right_operand != nullptr)
         m->right_operand->accept(*this);
-    leftRight = 0;
     this->pop_src_node();
 
     // Semantic Check // Expression Stack
@@ -1138,15 +1135,19 @@ void SemanticAnalyzer::visit(FunctionCallNode *m) { // EXPRESSION //STATEMENT
     // Visit Child Node
     this->push_src_node(FUNCTION_CALL_NODE);
     fc = 1;
-    if (m->arguments != nullptr)
+    if (m->arguments != nullptr) {
         for (int i = m->arguments->size() - 1; i >= 0; i--) {// REVERSE TRAVERSE
             (*(m->arguments))[i]->accept(*this);
+            //gen_func_args(i);
+        }
+        for (int i = 0; i < m->arguments->size(); i++) {// REVERSE TRAVERSE
             gen_func_args(i);
         }
+    }
     fc = 0;
     this->pop_src_node();
 
-    gen_func_return(m->function_name);
+    gen_func_call(m->function_name);
 
     // Semantic Check
     if (check_function_declaration(m->function_name) == false) {

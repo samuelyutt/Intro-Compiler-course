@@ -89,9 +89,11 @@ void gen_local_decl(string name, int value) {
 	int idx = lc_decl_i[ stack_i ];
 	lc_decl[ stack_i ][ idx++ ] = name;
 	lc_decl_i[ stack_i ] = idx;
+	gen_load_int(value);
+	gen_assign(name);
 }
 
-void gen_load_int(int leftRight, int value) {
+void gen_load_int(int value) {
 	fprintf(ofp, "    li t%d, %d\n", tp_i, value);
 	tp_i++;
 }
@@ -147,7 +149,7 @@ void gen_load_word(string name) {
 	int seq;
 	seq = find_lc_decl(name);
 	if (seq != -1) {
-		fprintf(ofp, "    lw t%d, %d(s0)\n",tp_i, -20-seq*4);
+		fprintf(ofp, "    lw t%d, %d(s0)\n", tp_i, -20-seq*4);
 		tp_i++;
 		return;
 	}	
@@ -204,7 +206,13 @@ void gen_func_start(string name) {
 	fprintf(ofp, "    sd s0, 48(sp)\n");
 	fprintf(ofp, "    addi s0, sp, 64\n");
 	stack_i++;
+	lc_decl_i[ stack_i ] = 0;
 	param_count = 0;
+
+	//int ret = tp_i;
+	
+
+	//return ret;
 }
 
 void gen_func_end(string name) {
@@ -234,13 +242,35 @@ void gen_return() {
 
 
 void gen_func_args(int count) {
-	fprintf(ofp, "    mv a%d, t0\n", count);
+	//fprintf(ofp, "    mv a%d, t0\n", count);
+	fprintf(ofp, "    mv a%d, t%d\n", count, tp_i-1);
 	tp_i--;
 }
 
 
-void gen_func_return(string name) {
+void gen_func_call(string name) {
+	int tmp_tp_i = tp_i;
+	int idx;
+	int preserved_count = 0;
+	for (int i = 0; i < tmp_tp_i; i++) {
+		idx = lc_decl_i[ stack_i ];
+		lc_decl[ stack_i ][ idx ] = "preserved_for_tmprys";
+		fprintf(ofp, "    sw t%d, %d(s0)\n", i, -20-idx*4);
+		lc_decl_i[ stack_i ] = ++idx;
+		tp_i--;
+		preserved_count++;
+	}
+
 	fprintf(ofp, "    jal ra, %s\n", name.c_str());
+
+	tp_i = 0;
+	idx = lc_decl_i[ stack_i ];
+	for (int i = 0; i < preserved_count; i++) {
+		fprintf(ofp, "    lw t%d, %d(s0)\n", i, -20-(idx-preserved_count+i)*4);
+		tp_i++;
+	}
+
+	lc_decl_i[ stack_i ] = idx - preserved_count;
 	fprintf(ofp, "    mv t%d, a0\n", tp_i);
 	tp_i++;
 }
